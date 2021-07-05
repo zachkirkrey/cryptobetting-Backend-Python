@@ -57,3 +57,12 @@ pip install -r requirements.txt
 python createJson.py
 
 ```
+
+- Install Supervisor
+
+```
+pip install supervisor
+
+supervisord -c supervisord.conf
+
+```
