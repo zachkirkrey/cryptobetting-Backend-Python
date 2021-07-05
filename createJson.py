@@ -7,6 +7,7 @@ import redis
 import os
 import ast
 from unicorn_binance_websocket_api.unicorn_binance_websocket_api_manager import BinanceWebSocketApiManager
+from db import db_add_expiries, db_add_probabilities
 
 USERPOOL = redis.ConnectionPool(
     host='localhost', port=6379, db=0, decode_responses=True)
@@ -255,6 +256,8 @@ async def calculate(data,PRICE):
             expiry = {}
             expiry['expiry'] = j['expiry']
             probabilities = []
+            idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
+            print(idexpiries)
             # print(j)
             for prob in j['probabilities']:
                 probability = {}
@@ -268,6 +271,8 @@ async def calculate(data,PRICE):
                 probability['strike'] = prob['strike']
                 probability['over'] = float('{:.3g}'.format(over_prob))
                 probability['under'] = float('{:.3g}'.format(under_prob))
+
+                db_add_probabilities(idexpiries, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
                 
                 probabilities.append(probability)
                 odds_id = odds_id + 1
