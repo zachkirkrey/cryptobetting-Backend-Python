@@ -9,6 +9,22 @@ sudo apt-get install python3.8
 
 ```
 
+- Install Redis
+
+```
+sudo apt install redis-server
+
+sudo nano /etc/redis/redis.conf
+
+# change "supervised no" to "supervised systemd" 
+supervised systemd
+
+sudo systemctl restart redis.service
+
+sudo systemctl status redis
+
+```
+
 - Create virtual environment
 
 ```
