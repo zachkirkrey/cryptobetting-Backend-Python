@@ -118,5 +118,3 @@ else:
             if(response.status_code == 200):
                 rclient.delete("fixtureCreated")
                 rclient.delete("fixtureId")
-
-    rclient.delete("fixtureCreated")
