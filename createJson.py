@@ -7,7 +7,7 @@ import redis
 import os
 import ast
 from unicorn_binance_websocket_api.unicorn_binance_websocket_api_manager import BinanceWebSocketApiManager
-from db import db_add_expiries, db_add_probabilities
+# from db import db_add_expiries, db_add_probabilities
 
 USERPOOL = redis.ConnectionPool(
     host='localhost', port=6379, db=0, decode_responses=True)
@@ -256,14 +256,14 @@ async def calculate(data,PRICE):
             expiry = {}
             expiry['expiry'] = j['expiry']
             probabilities = []
-            idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
-            print(idexpiries)
+            # idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
+            # print(idexpiries)
             # print(j)
             for prob in j['probabilities']:
                 probability = {}
                 # print(prob)
-                over_prob = prob['probability']
-                under_prob = 1 - over_prob
+                over_prob = prob['probability'] * data['Rake_over']
+                under_prob = (1 - over_prob) * data['Rake_under']
                 # rake_over = (1 - 0.03) * over_prob
                 # rake_under = (1 - 0.03) * under_prob
 
@@ -272,7 +272,7 @@ async def calculate(data,PRICE):
                 probability['over'] = float('{:.3g}'.format(over_prob))
                 probability['under'] = float('{:.3g}'.format(under_prob))
 
-                db_add_probabilities(idexpiries, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
+                # db_add_probabilities(idexpiries, odds_id, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
                 
                 probabilities.append(probability)
                 odds_id = odds_id + 1
@@ -282,8 +282,8 @@ async def calculate(data,PRICE):
             expriries.append(expiry)
                 
         finalOutput['price'] = PRICE
-        finalOutput['rake_over'] = data['Rake_over']
-        finalOutput['rake_under'] = data['Rake_under']
+        # finalOutput['rake_over'] = data['Rake_over']
+        # finalOutput['rake_under'] = data['Rake_under']
         finalOutput['expiries'] = expriries
         print(json.dumps(finalOutput))
         print('\n\n')
@@ -321,7 +321,8 @@ async def main():
         
     if(error == 0):        
         binance_websocket_api_manager = BinanceWebSocketApiManager(exchange="binance.com-futures")
-        binance_websocket_api_manager.create_stream(['markPrice@1s'], ['btcusdt'])
+        binance_websocket_api_manager.create_stream(
+            ['miniTicker'], ['btcusdt'])
         while True:           
             stream = binance_websocket_api_manager.pop_stream_data_from_stream_buffer()
             if stream:
@@ -336,7 +337,7 @@ async def main():
                     # print(type(last_sent_price))
                     # print(last_sent_price)
 
-                    mark_price = float(data['p'])
+                    mark_price = float(data['c'])
                     print("Last Price; ", last_sent_price)
                     print("Mark Price; ", mark_price)
                     
