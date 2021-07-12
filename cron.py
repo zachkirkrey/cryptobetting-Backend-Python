@@ -16,7 +16,7 @@ rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
 
 CURR_TIME = datetime.now()
 
-FIXTURE_TIME = CURR_TIME + timedelta(seconds=18000)
+FIXTURE_TIME = CURR_TIME - timedelta(minutes=10)
 print(FIXTURE_TIME)
 
 fixtures = rclient.get('fixtureCreated')
@@ -118,3 +118,5 @@ else:
             if(response.status_code == 200):
                 rclient.delete("fixtureCreated")
                 rclient.delete("fixtureId")
+
+    rclient.delete("fixtureCreated")
