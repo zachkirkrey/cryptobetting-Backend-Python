@@ -320,7 +320,7 @@ async def main():
             error = 1
         
     if(error == 0):        
-        binance_websocket_api_manager = BinanceWebSocketApiManager(exchange="binance.com-futures")
+        binance_websocket_api_manager = BinanceWebSocketApiManager(exchange="binance.com")
         binance_websocket_api_manager.create_stream(
             ['miniTicker'], ['btcusdt'])
         while True:           
