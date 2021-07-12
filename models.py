@@ -46,9 +46,18 @@ class Probabilities(Base):
     __tablename__ = 'probabilities'
 
     idprobabilities = Column(Integer, primary_key=True)
-    idexpiries = Column(ForeignKey('expiries.idexpiries',
-                                   ondelete='RESTRICT', onupdate='RESTRICT'), index=True)
+    idexpiries = Column(ForeignKey('expiries.idexpiries', ondelete='RESTRICT', onupdate='RESTRICT'), index=True)
+    odds_id = Column(Integer)
     strike = Column(Float)
     over = Column(Float)
     under = Column(Float)
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
+
+class Fixtures(Base):
+    __tablename__ = 'fixtures'
+
+    id = Column(BigInteger, primary_key=True)
+    fixtureType = Column(Integer)
+    startTime = Column(DateTime)
+    marketEndTime = Column(DateTime)
+    endTime = Column(DateTime)
