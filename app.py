@@ -9,7 +9,8 @@ import random
 import string
 from flask import send_file, Flask, jsonify
 from flask_restful import Api, Resource, reqparse, request
-from db import (db_add_expiries, db_add_probabilities, db_get_expiry_data)
+from db import (db_add_expiries, db_add_probabilities,
+                db_get_expiry_data, db_get_fixtures_by_status)
 from flask_cors import CORS
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -85,10 +86,29 @@ class ExpiryData(Resource):
         return jsonify(data)
 
 
+class Fixtures(Resource):
+    def get(self):
+        args = request.args
+        status = args['status']
+
+        if(status == "" or status is None):
+            return jsonify(success=False, message=MSG_ALL_FIELDS)
+
+        data = db_get_fixtures_by_status(status.upper())
+        # print(data)
+        if(data):
+            data = json.loads(data)
+            print(data)
+
+            return jsonify(data)
+        else:
+            return []
+
 # ENDPOINTS
 
 api.add_resource(Test, '/test')
 api.add_resource(ExpiryData, '/expiryData')
+api.add_resource(Fixtures, '/fixtures')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=9000)
