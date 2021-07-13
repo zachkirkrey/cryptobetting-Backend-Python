@@ -6,7 +6,7 @@ import requests
 import redis
 import os
 import ast
-from db import db_get_started_fixture
+from db import db_get_started_fixture, db_set_fixture_status
 import uuid
 import hashlib
 
@@ -36,4 +36,5 @@ if(fixtures != None):
     if(fixtureId == None or fixtureId != fixtures[0]['id']):
         print('PUSH FIXTURE ID TO JSON')
         print(fixtures[0]['id'])
+        db_set_fixture_status(fixtures[0]['id'], "STARTED")
         rclient.set("fixtureStarted", str(fixtures[0]['id']))

@@ -6,7 +6,7 @@ import requests
 import redis
 import os
 import ast
-from db import db_get_ended_fixture
+from db import db_get_ended_fixture, db_set_fixture_status, db_set_fixture_price
 import uuid
 import hashlib
 
@@ -70,4 +70,6 @@ if(fixtureId == None or fixtureId != fixtures[0]['id']):
             "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndFixture", json=res, headers=headers)
         print(response)
         if(response.status_code == 200):
+            db_set_fixture_price(fixtures[0]['id'], price)
+            db_set_fixture_status(fixtures[0]['id'], "ENDED")
             rclient.set("fixtureEnded", str(fixtures[0]['id']))
