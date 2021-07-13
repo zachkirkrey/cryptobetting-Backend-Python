@@ -6,7 +6,7 @@ import requests
 import redis
 import os
 import ast
-from db import db_get_fixture
+from db import db_get_fixture, db_set_fixture_status
 import uuid
 import hashlib
 
@@ -60,4 +60,5 @@ if(fixtures != None):
         response = requests.post("http://owapi1.playthefun.com:9130/api/CryptoCurrency/CreateFixture", json=res, headers=headers)
         print(response)
         if(response.status_code == 200):
+            db_set_fixture_status(fixtures[0]['id'], "CREATED")
             rclient.set("fixtureCreated", str(fixtures[0]['id']))

@@ -61,3 +61,5 @@ class Fixtures(Base):
     startTime = Column(DateTime)
     marketEndTime = Column(DateTime)
     endTime = Column(DateTime)
+    price = Column(Float)
+    status = Column(Text)

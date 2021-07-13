@@ -143,3 +143,28 @@ def db_get_ended_fixture(current_time, session=None):
     except Exception as e:
         print(e)
         return None
+
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_set_fixture_status(fixtureId, status, session=None):
+    try:
+        update_fixture = {"status": status}
+        session.query(Fixtures).filter(Fixtures.id == fixtureId).update(update_fixture, synchronize_session=False)
+        session.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return None
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_set_fixture_price(fixtureId, price, session=None):
+    try:
+        update_fixture = {'price': price}
+        session.query(Fixtures).filter(Fixtures.id == fixtureId).update(update_fixture, synchronize_session=False)
+        session.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return None
