@@ -121,7 +121,7 @@ def db_get_started_fixture(current_time, session=None):
     try:
         check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime).filter(Fixtures.marketEndTime < current_time, Fixtures.endTime > current_time).order_by(Fixtures.startTime.asc()).limit(1).statement
         df = pd.read_sql(check_fixture, engine)
-        print(check_fixture.compile(engine))
+        
         if(df.empty):
             return None
         else:
@@ -165,6 +165,23 @@ def db_set_fixture_price(fixtureId, price, session=None):
         session.query(Fixtures).filter(Fixtures.id == fixtureId).update(update_fixture, synchronize_session=False)
         session.commit()
         return True
+    except Exception as e:
+        print(e)
+        return None
+
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_get_fixtures_by_status(status, session=None):
+    try:
+        # print(status)
+        check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime, Fixtures.price, Fixtures.status).filter(Fixtures.status == status).order_by(Fixtures.startTime.desc()).statement
+        df = pd.read_sql(check_fixture, engine)
+        print(check_fixture.compile(engine))
+        if(df.empty):
+            return None
+        else:
+            return df.to_json(orient="records")
     except Exception as e:
         print(e)
         return None
