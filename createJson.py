@@ -262,15 +262,15 @@ async def calculate(data,PRICE):
             for prob in j['probabilities']:
                 probability = {}
                 # print(prob)
-                over_prob = prob['probability'] * data['Rake_over']
-                under_prob = (1 - over_prob) * data['Rake_under']
-                # rake_over = (1 - 0.03) * over_prob
-                # rake_under = (1 - 0.03) * under_prob
+                over_prob = prob['probability'] 
+                under_prob = (1 - over_prob)
+                rake_over = (1 - data['Rake_over']) * over_prob
+                rake_under = (1 - data['Rake_under']) * under_prob
 
                 probability['odds_id'] = odds_id
                 probability['strike'] = prob['strike']
-                probability['over'] = float('{:.3g}'.format(over_prob))
-                probability['under'] = float('{:.3g}'.format(under_prob))
+                probability['over'] = float('{:.3g}'.format(rake_over))
+                probability['under'] = float('{:.3g}'.format(rake_under))
 
                 # db_add_probabilities(idexpiries, odds_id, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
                 
