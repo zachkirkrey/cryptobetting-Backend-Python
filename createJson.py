@@ -264,8 +264,8 @@ async def calculate(data,PRICE):
                 # print(prob)
                 over_prob = prob['probability'] 
                 under_prob = (1 - over_prob)
-                rake_over = (1 - data['Rake_over']) * over_prob
-                rake_under = (1 - data['Rake_under']) * under_prob
+                rake_over = (1 - data['Rake_over']) * (1 / over_prob)
+                rake_under = (1 - data['Rake_under']) * (1 / under_prob)
 
                 probability['odds_id'] = odds_id
                 probability['strike'] = prob['strike']
