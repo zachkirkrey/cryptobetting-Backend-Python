@@ -59,15 +59,15 @@ if(fixtureId == None or fixtureId != fixtures[0]['id']):
 
         print(res)
 
-        # SECRET_KEY = os.getenv('OWAPI_SECRET_KEY')
-        # access_key = hashlib.md5(
-        #     (SECRET_KEY+json.dumps(res)).encode('utf-8')).hexdigest()
-        # print('ACCESS KEY: ', access_key)
-        # headers = {"content-type": "application/json",
-        #             "oneworks-access-key": access_key}
-        # print(headers)
-        # response = requests.post(
-        #     "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndFixture", json=res, headers=headers)
-        # print(response)
-        # if(response.status_code == 200):
-            # rclient.set("fixtureEnded", str(fixtures[0]['id']))
+        SECRET_KEY = os.getenv('OWAPI_SECRET_KEY')
+        access_key = hashlib.md5(
+            (SECRET_KEY+json.dumps(res)).encode('utf-8')).hexdigest()
+        print('ACCESS KEY: ', access_key)
+        headers = {"content-type": "application/json",
+                    "oneworks-access-key": access_key}
+        print(headers)
+        response = requests.post(
+            "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndFixture", json=res, headers=headers)
+        print(response)
+        if(response.status_code == 200):
+            rclient.set("fixtureEnded", str(fixtures[0]['id']))
