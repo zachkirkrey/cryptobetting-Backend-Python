@@ -185,3 +185,20 @@ def db_get_fixtures_by_status(status, session=None):
     except Exception as e:
         print(e)
         return None
+
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_get_fixtures(session=None):
+    try:
+        # print(status)
+        check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime,Fixtures.price, Fixtures.status).order_by(Fixtures.startTime.desc()).statement
+        df = pd.read_sql(check_fixture, engine)
+        print(check_fixture.compile(engine))
+        if(df.empty):
+            return None
+        else:
+            return df.to_json(orient="records")
+    except Exception as e:
+        print(e)
+        return None
