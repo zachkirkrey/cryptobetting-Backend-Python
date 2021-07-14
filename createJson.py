@@ -264,6 +264,7 @@ async def calculate(data, PRICE, fixtureId):
             odds_id = 1
             expiry = {}
             expiry['fixtureId'] = fixtureId
+            expiry['expiry'] = j['expiry']
             probabilities = []
             # idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
             # print(idexpiries)
@@ -358,7 +359,7 @@ async def main():
                     print(1.01*last_sent_price)
 
                     if rclient.get("sent_flag") == None:
-                        fixtureData = rclient.get('fixtureStarted')
+                        fixtureData = rclient.get('fixtureId')
                         if (fixtureData):
                             fixtureId = ast.literal_eval(fixtureData)
                             print("Fixture Id; ", fixtureId)
@@ -366,7 +367,7 @@ async def main():
                             rclient.set('last_sent_price', str(mark_price))
                             rclient.setex("sent_flag", 15, 1)
                     elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
-                        fixtureData = rclient.get('fixtureStarted')
+                        fixtureData = rclient.get('fixtureId')
                         if (fixtureData):
                             fixtureId = ast.literal_eval(fixtureData)
                             print("Fixture Id; ", fixtureId)
