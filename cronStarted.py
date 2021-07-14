@@ -26,7 +26,7 @@ if(fixtures != None):
     print(type(fixtures[0]['marketEndTime']))
     print(fixtures[0]['id'])
 
-    fixtureStarted= rclient.get('fixtureStarted')
+    fixtureStarted = rclient.get('fixtureStarted')
     print(fixtureStarted)
     if (fixtureStarted):
         fixtureId = ast.literal_eval(fixtureStarted)
@@ -38,3 +38,4 @@ if(fixtures != None):
         print(fixtures[0]['id'])
         db_set_fixture_status(fixtures[0]['id'], "STARTED")
         rclient.set("fixtureStarted", str(fixtures[0]['id']))
+        rclient.set("fixtureId", str(fixtures[0]['id']))
