@@ -293,7 +293,7 @@ async def calculate(data, PRICE, fixtureId):
 
         finalOutput['price'] = PRICE
         finalOutput['timestamp'] = int(datetime.now().timestamp())
-        finalOutput['type'] = 1
+        finalOutput['type'] = 2
         # finalOutput['rake_over'] = data['Rake_over']
         # finalOutput['rake_under'] = data['Rake_under']
         finalOutput['fixtures'] = expriries
