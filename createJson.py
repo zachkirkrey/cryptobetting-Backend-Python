@@ -264,7 +264,7 @@ async def calculate(data, PRICE, fixtureId):
             odds_id = 1
             expiry = {}
             expiry['fixtureId'] = fixtureId
-            expiry['expiry'] = j['expiry']
+            # expiry['expiry'] = j['expiry']
             probabilities = []
             # idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
             # print(idexpiries)
@@ -277,7 +277,7 @@ async def calculate(data, PRICE, fixtureId):
                 rake_over = (1 - data['Rake_over']) * (1 / over_prob)
                 rake_under = (1 - data['Rake_under']) * (1 / under_prob)
 
-                probability['odds_id'] = odds_id
+                # probability['odds_id'] = odds_id
                 probability['strike'] = prob['strike']
                 probability['over'] = float('{:.3g}'.format(rake_over))
                 probability['under'] = float('{:.3g}'.format(rake_under))
@@ -292,7 +292,7 @@ async def calculate(data, PRICE, fixtureId):
             expriries.append(expiry)
 
         finalOutput['price'] = PRICE
-        finalOutput['timestamp'] = datetime.now().strftime('%Y/%m/%d %I:%M:%S')
+        finalOutput['timestamp'] = int(datetime.now().timestamp())
         finalOutput['type'] = 1
         # finalOutput['rake_over'] = data['Rake_over']
         # finalOutput['rake_under'] = data['Rake_under']
