@@ -263,7 +263,7 @@ async def calculate(data, PRICE, fixtureId):
         for j in response.json()['expiries']:
             odds_id = 1
             expiry = {}
-            expiry['fixtureId'] = fixtureId
+            expiry['id'] = fixtureId
             # expiry['expiry'] = j['expiry']
             probabilities = []
             # idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
@@ -292,7 +292,7 @@ async def calculate(data, PRICE, fixtureId):
             expriries.append(expiry)
 
         finalOutput['price'] = PRICE
-        finalOutput['timestamp'] = int(datetime.now().timestamp())
+        finalOutput['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
         finalOutput['type'] = 2
         # finalOutput['rake_over'] = data['Rake_over']
         # finalOutput['rake_under'] = data['Rake_under']
