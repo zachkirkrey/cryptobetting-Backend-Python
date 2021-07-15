@@ -48,7 +48,7 @@ if(fixtureId == None or fixtureId != fixtures[0]['id']):
         price = ast.literal_eval(resdisdata)
 
     if(price > 0):
-        res['Timestamp'] = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        res['Timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
         res['Seq'] = seq
 
         res['Fixture'] = {
