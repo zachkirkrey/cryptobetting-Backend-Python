@@ -9,6 +9,7 @@ import ast
 from db import db_get_fixture, db_set_fixture_status
 import uuid
 import hashlib
+import pytz
 
 USERPOOL = redis.ConnectionPool(
     host='localhost', port=6379, db=0, decode_responses=True)
@@ -42,13 +43,13 @@ if(fixtures != None):
         seq = str(uuid.uuid4())
         print(seq)
 
-        res['Timestamp'] = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        res['Timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
         res['Seq'] = seq
         res['Fixture'] = {
             "Id": fixtures[0]['id'],
-            "StartTime":  datetime.utcfromtimestamp(fixtures[0]['startTime']/1000).strftime('%Y/%m/%d %H:%M:%S'),
-            "MarketEndTime": datetime.utcfromtimestamp(fixtures[0]['marketEndTime']/1000).strftime('%Y/%m/%d %H:%M:%S'),
-            "EndTime": datetime.utcfromtimestamp(fixtures[0]['endTime']/1000).strftime('%Y/%m/%d %H:%M:%S')
+            "StartTime":  datetime.utcfromtimestamp(fixtures[0]['startTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3],
+            "MarketEndTime": datetime.utcfromtimestamp(fixtures[0]['marketEndTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3],
+            "EndTime": datetime.utcfromtimestamp(fixtures[0]['endTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
         }
         print(res)
 
