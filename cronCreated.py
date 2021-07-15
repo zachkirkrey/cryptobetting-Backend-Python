@@ -47,9 +47,9 @@ if(fixtures != None):
         res['Seq'] = seq
         res['Fixture'] = {
             "Id": fixtures[0]['id'],
-            "StartTime":  datetime.utcfromtimestamp(fixtures[0]['startTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3],
-            "MarketEndTime": datetime.utcfromtimestamp(fixtures[0]['marketEndTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3],
-            "EndTime": datetime.utcfromtimestamp(fixtures[0]['endTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
+            "StartTime":  datetime.utcfromtimestamp(fixtures[0]['startTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S'),
+            "MarketEndTime": datetime.utcfromtimestamp(fixtures[0]['marketEndTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S'),
+            "EndTime": datetime.utcfromtimestamp(fixtures[0]['endTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S')
         }
         print(res)
 
