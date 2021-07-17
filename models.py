@@ -62,4 +62,4 @@ class Fixtures(Base):
     marketEndTime = Column(DateTime)
     endTime = Column(DateTime)
     price = Column(Float)
-    status = Column(Text)
+    status = Column(Text, server_default=text("'PENDING'"))
