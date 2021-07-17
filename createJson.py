@@ -376,7 +376,8 @@ async def main():
                         # rclient.setex("sent_flag", 15, 1)
                     else:
                         res = {}
-                        res['price'] = mark_price
+                        res['price'] = mark_price 
+                        res['type'] = 1 
                         rclient.publish('BO-DATA', json.dumps(res))
 
 
