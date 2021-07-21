@@ -73,4 +73,4 @@ if(fixtureId == None or fixtureId != fixtures[0]['id']):
             db_set_fixture_price(fixtures[0]['id'], price)
             db_set_fixture_status(fixtures[0]['id'], "ENDED")
             rclient.set("fixtureEnded", str(fixtures[0]['id']))
-            rclient.delete("fixtureId")
+            # rclient.delete("fixtureId")
