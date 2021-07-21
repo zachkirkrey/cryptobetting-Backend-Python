@@ -119,6 +119,21 @@ def db_get_fixture(fixture_time, session=None):
 @mk_session
 def db_get_started_fixture(current_time, session=None):
     try:
+        check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime).filter(Fixtures.startTime < current_time).order_by(Fixtures.startTime.desc()).limit(1).statement
+        df = pd.read_sql(check_fixture, engine)
+        
+        if(df.empty):
+            return None
+        else:
+            return df.to_json(orient="records")
+    except Exception as e:
+        print(e)
+        return None
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_get_last_started_fixture(current_time, session=None):
+    try:
         check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime).filter(Fixtures.marketEndTime < current_time, Fixtures.endTime > current_time).order_by(Fixtures.startTime.asc()).limit(1).statement
         df = pd.read_sql(check_fixture, engine)
         

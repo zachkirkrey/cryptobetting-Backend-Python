@@ -6,7 +6,7 @@ import requests
 import redis
 import os
 import ast
-from db import db_get_started_fixture, db_set_fixture_status
+from db import db_get_started_fixture, db_set_fixture_status, db_get_last_started_fixture
 import uuid
 import hashlib
 
@@ -39,3 +39,21 @@ if(fixtures != None):
         db_set_fixture_status(fixtures[0]['id'], "STARTED")
         rclient.set("fixtureStarted", str(fixtures[0]['id']))
         rclient.set("fixtureId", str(fixtures[0]['id']))
+
+endfixtures = db_get_last_started_fixture(CURR_TIME)
+print(endfixtures)
+if(endfixtures != None):
+    fixtures = json.loads(endfixtures)
+    print(fixtures)
+    print(type(fixtures))
+    print(fixtures[0]['marketEndTime'])
+    print(type(fixtures[0]['marketEndTime']))
+    print(fixtures[0]['id'])
+
+
+    fixtureId = fixtures[0]['id']
+
+    if(fixtureId != None):
+        print('STOP FIXTURE')
+        print(fixtureId)
+        rclient.delete("fixtureId")
