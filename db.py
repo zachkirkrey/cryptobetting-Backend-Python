@@ -226,9 +226,9 @@ def db_get_fixtures_by_id(from_fixture=None, to_fixture=None, session=None):
         if(from_fixture != None and to_fixture != None):
             check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime,  Fixtures.price, Fixtures.status).filter(Fixtures.id >= from_fixture, Fixtures.id <= to_fixture).order_by(Fixtures.startTime.desc()).statement
         elif(from_fixture != None and to_fixture == None):
-            check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime,  Fixtures.price, Fixtures.status).filter(Fixtures.id >= from_fixture).order_by(Fixtures.startTime.desc()).limit(100).statement
+            check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime,  Fixtures.price, Fixtures.status).filter(Fixtures.id >= from_fixture).order_by(Fixtures.startTime.asc()).limit(100).statement
         elif(from_fixture == None and to_fixture != None):
-            check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime,  Fixtures.price, Fixtures.status).filter(Fixtures.id <= to_fixture).order_by(Fixtures.startTime.desc()).limit(100).statement
+            check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime,  Fixtures.price, Fixtures.status).filter(Fixtures.id <= to_fixture).order_by(Fixtures.startTime.asc()).limit(100).statement
         df = pd.read_sql(check_fixture, engine)
         # print(check_fixture.compile(engine))
         if(df.empty):
