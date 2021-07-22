@@ -20,17 +20,17 @@ const server = new WebSocket.Server({ port: WEB_SOCKET_PORT });
 // Register event for client connection
 server.on('connection', function connection(ws) {
 
-    client.get("BO-DATA", (err, data) => {
-        if (err) {
-            console.error(err);
-            // throw err;
-        }
-        else {
-            console.log("1. Get key from redis - ", data);
-            ws.send(data);
-        }
+    // client.get("BO-DATA", (err, data) => {
+    //     if (err) {
+    //         console.error(err);
+    //         // throw err;
+    //     }
+    //     else {
+    //         console.log("1. Get key from redis - ", data);
+    //         ws.send(data);
+    //     }
 
-    });
+    // });
 
     // broadcast on web socket when receving a Redis PUB/SUB Event
     redisClient.on('message', function (channel, message) {
