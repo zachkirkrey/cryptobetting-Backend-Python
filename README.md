@@ -51,10 +51,18 @@ pip install -r requirements.txt
 
 ```
 
-- Run the code
+- Add cronjobs 
+  - cronCreated.sh, cronStarted.sh and cronEnded.sh file runs every minute, where cronFixture runs once a day.
 
 ```
-python createJson.py
+crontab -e
+
+###### add following code to cron file
+
+* * * * * bash /home/ubuntu/boTrading/backend/cronCreated.sh > /dev/null 2>&1
+* * * * * bash /home/ubuntu/boTrading/backend/cronStarted.sh > /dev/null 2>&1
+* * * * * bash /home/ubuntu/boTrading/backend/cronEnded.sh > /dev/null 2>&1
+0 0 * * * bash /home/ubuntu/boTrading/backend/cronFixture.sh > /dev/null 2>&1
 
 ```
 
@@ -64,5 +72,22 @@ python createJson.py
 pip install supervisor
 
 supervisord -c supervisord.conf
+
+```
+
+
+- Run the API App
+
+```
+pip install gunicorn
+
+gunicorn -w 3 -t 2 -b 0.0.0.0:7000 --timeout 15000 --max-requests 1000 app:app --daemon
+
+```
+
+- To Kill Gunicorn Process of App
+
+```
+pkill gunicorn
 
 ```
