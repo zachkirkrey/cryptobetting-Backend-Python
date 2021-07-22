@@ -291,18 +291,19 @@ async def calculate(data, PRICE, fixtureId):
 
             expriries.append(expiry)
 
-        finalOutput['price'] = PRICE
-        finalOutput['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
-        finalOutput['type'] = 2
-        # finalOutput['rake_over'] = data['Rake_over']
-        # finalOutput['rake_under'] = data['Rake_under']
-        finalOutput['fixtures'] = expriries
-        
-        print(json.dumps(finalOutput))
-        print('\n\n')
+        if(len(expriries) > 0):
+            finalOutput['price'] = PRICE
+            finalOutput['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
+            finalOutput['type'] = 2
+            # finalOutput['rake_over'] = data['Rake_over']
+            # finalOutput['rake_under'] = data['Rake_under']
+            finalOutput['fixtures'] = expriries
+            
+            print(json.dumps(finalOutput))
+            print('\n\n')
 
-        rclient.set('BO-DATA', json.dumps(finalOutput))
-        rclient.publish('BO-DATA', json.dumps(finalOutput))
+            rclient.set('BO-DATA', json.dumps(finalOutput))
+            rclient.publish('BO-DATA', json.dumps(finalOutput))
 
         refresh_rate = data['Refresh_rate']
         await asyncio.sleep(refresh_rate)
