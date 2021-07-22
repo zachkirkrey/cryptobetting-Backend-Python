@@ -10,7 +10,7 @@ import string
 from flask import send_file, Flask, jsonify
 from flask_restful import Api, Resource, reqparse, request
 from db import (db_add_expiries, db_add_probabilities,
-                db_get_expiry_data, db_get_fixtures_by_status, db_get_fixtures)
+                db_get_expiry_data, db_get_fixtures_by_status, db_get_fixtures, db_get_fixtures_by_id)
 from flask_cors import CORS
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -93,9 +93,26 @@ class Fixtures(Resource):
             status = args['status']
         else:
             status = None
+
+        if('from' in args):
+            from_fixture = args['from']
+        else:
+            from_fixture = None
+        
+        if('to' in args):
+            to_fixture = args['to']
+        else:
+            to_fixture = None
+
         
         if(status != None):
             data = db_get_fixtures_by_status(status.upper())
+        elif(from_fixture != None and to_fixture != None):
+            data = db_get_fixtures_by_id(from_fixture, to_fixture)
+        elif(from_fixture != None and to_fixture == None):
+            data = db_get_fixtures_by_id(from_fixture, None)
+        elif(from_fixture == None and to_fixture != None):
+            data = db_get_fixtures_by_id(None, to_fixture)
         else:
             data = db_get_fixtures()
         # print(data)
