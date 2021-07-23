@@ -377,8 +377,9 @@ async def main():
                         # rclient.setex("sent_flag", 15, 1)
                     else:
                         res = {}
-                        res['price'] = mark_price 
-                        res['type'] = 1 
+                        res['price'] = mark_price
+                        res['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] 
+                        res['type'] = 1
                         rclient.publish('BO-DATA', json.dumps(res))
 
 
