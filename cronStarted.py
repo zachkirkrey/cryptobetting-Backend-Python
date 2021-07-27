@@ -25,20 +25,23 @@ if(fixtures != None):
     print(fixtures[0]['marketEndTime'])
     print(type(fixtures[0]['marketEndTime']))
     print(fixtures[0]['id'])
+    print(fixtures[0]['status'])
 
-    fixtureStarted = rclient.get('fixtureStarted')
-    print(fixtureStarted)
-    if (fixtureStarted):
-        fixtureId = ast.literal_eval(fixtureStarted)
-    else:
-        fixtureId = None
+    if(fixtures[0]['status'] == 'CREATED'):
 
-    if(fixtureId == None or fixtureId != fixtures[0]['id']):
-        print('PUSH FIXTURE ID TO JSON')
-        print(fixtures[0]['id'])
-        db_set_fixture_status(fixtures[0]['id'], "STARTED")
-        rclient.set("fixtureStarted", str(fixtures[0]['id']))
-        rclient.set("fixtureId", str(fixtures[0]['id']))
+        fixtureStarted = rclient.get('fixtureStarted')
+        print(fixtureStarted)
+        if (fixtureStarted):
+            fixtureId = ast.literal_eval(fixtureStarted)
+        else:
+            fixtureId = None
+
+        if(fixtureId == None or fixtureId != fixtures[0]['id']):
+            print('PUSH FIXTURE ID TO JSON')
+            print(fixtures[0]['id'])
+            db_set_fixture_status(fixtures[0]['id'], "STARTED")
+            rclient.set("fixtureStarted", str(fixtures[0]['id']))
+            rclient.set("fixtureId", str(fixtures[0]['id']))
 
 endfixtures = db_get_last_started_fixture(CURR_TIME)
 print(endfixtures)
