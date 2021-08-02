@@ -35,7 +35,13 @@ server.on('connection', function connection(ws) {
     // broadcast on web socket when receving a Redis PUB/SUB Event
     redisClient.on('message', function (channel, message) {
         console.log(message);
-        ws.send(message);
+        if ('ping' in message) {
+            res = { "pong": message['ping'] }
+            ws.send(res);
+        }
+        else {
+            ws.send(message);
+        }
     })
 
 });
