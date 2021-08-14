@@ -46,6 +46,7 @@ if(fixtures[0]['status'] == 'STARTED'):
         seq = str(uuid.uuid4())
         print(seq)
 
+        price = 0
         resdisdata = rclient.get('BTC_PRICE')
         if (resdisdata):
             price = ast.literal_eval(resdisdata)

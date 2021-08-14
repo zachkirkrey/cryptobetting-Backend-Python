@@ -354,7 +354,7 @@ async def main():
                     mark_price = float(data['c'])
                     print("Last Price; ", last_sent_price)
                     print("Mark Price; ", mark_price)
-                    rclient.set('BTC_PRICE', str(mark_price))
+                    rclient.setex('BTC_PRICE', 30, str(mark_price))
 
                     print(0.99*last_sent_price)
                     print(1.01*last_sent_price)

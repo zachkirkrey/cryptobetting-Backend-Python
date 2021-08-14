@@ -42,7 +42,20 @@ server.on('connection', function connection(ws) {
         var msg = JSON.parse(message);
         // console.log(typeof msg);
         if (msg.hasOwnProperty('ping')) {
-            ws.send(JSON.stringify({ "pong": msg['ping'] }));
+            client.get("BTC_PRICE", function (err, price) {
+                // price is null when the key is missing
+                if (err ) {
+                    ws.send(JSON.stringify({ "pong": "2" }));
+                }
+                console.log("BTC PRICE: ", price);
+                if (price == null) {
+                    ws.send(JSON.stringify({ "pong": "2" }));
+                }
+                else {
+                    ws.send(JSON.stringify({ "pong": msg['ping'] }));
+                }
+                
+            });
         }
     });
 
