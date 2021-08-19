@@ -20,7 +20,7 @@ start_market_diff = int(data['StartMarketDiff'])
 
 if(start_end_diff and start_market_diff):
 
-    STARTTIME = datetime.now() + timedelta(hours=-1)
+    STARTTIME = datetime.now()
     STARTTIME = hour_rounder(STARTTIME)
     print(STARTTIME)
 
