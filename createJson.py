@@ -49,7 +49,7 @@ def get_config_data():
     return data
 
 
-async def calculate(data, PRICE, fixtureId):
+async def calculate(data, PRICE, fixtureIds):
     SLOTS = 2
     EXPIRIES = []
     last_timeline = None
@@ -259,37 +259,38 @@ async def calculate(data, PRICE, fixtureId):
 
         finalOutput = {}
         expriries = []
+        for fixtureId in fixtureIds:
+            # print(fixtureId)
+            for j in response.json()['expiries']:
+                odds_id = 1
+                expiry = {}
+                expiry['id'] = fixtureId
+                # expiry['expiry'] = j['expiry']
+                probabilities = []
+                # idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
+                # print(idexpiries)
+                # print(j)
+                for prob in j['probabilities']:
+                    probability = {}
+                    # print(prob)
+                    over_prob = prob['probability']
+                    under_prob = (1 - over_prob)
+                    rake_over = (1 - data['Rake_over']) * (1 / over_prob)
+                    rake_under = (1 - data['Rake_under']) * (1 / under_prob)
 
-        for j in response.json()['expiries']:
-            odds_id = 1
-            expiry = {}
-            expiry['id'] = fixtureId
-            # expiry['expiry'] = j['expiry']
-            probabilities = []
-            # idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
-            # print(idexpiries)
-            # print(j)
-            for prob in j['probabilities']:
-                probability = {}
-                # print(prob)
-                over_prob = prob['probability']
-                under_prob = (1 - over_prob)
-                rake_over = (1 - data['Rake_over']) * (1 / over_prob)
-                rake_under = (1 - data['Rake_under']) * (1 / under_prob)
+                    # probability['odds_id'] = odds_id
+                    probability['strike'] = prob['strike']
+                    probability['over'] = float('{:.3g}'.format(rake_over))
+                    probability['under'] = float('{:.3g}'.format(rake_under))
 
-                # probability['odds_id'] = odds_id
-                probability['strike'] = prob['strike']
-                probability['over'] = float('{:.3g}'.format(rake_over))
-                probability['under'] = float('{:.3g}'.format(rake_under))
+                    # db_add_probabilities(idexpiries, odds_id, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
 
-                # db_add_probabilities(idexpiries, odds_id, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
+                    probabilities.append(probability)
+                    odds_id = odds_id + 1
 
-                probabilities.append(probability)
-                odds_id = odds_id + 1
+                expiry['probabilities'] = probabilities
 
-            expiry['probabilities'] = probabilities
-
-            expriries.append(expiry)
+                expriries.append(expiry)
 
         if(len(expriries) > 0):
             finalOutput['price'] = PRICE
@@ -368,11 +369,12 @@ async def main():
                     #         rclient.set('last_sent_price', str(mark_price))
                     #         rclient.setex("sent_flag", 15, 1)
                     # elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
-                    fixtureData = rclient.get('fixtureId')
+                    fixtureData = rclient.smembers('fixtureId')
                     if (fixtureData and mark_price != last_sent_price):
-                        fixtureId = ast.literal_eval(fixtureData)
-                        print("Fixture Id; ", fixtureId)
-                        await calculate(input_data, mark_price, fixtureId)
+                        # print(fixtureData)
+                        # fixtureId = ast.literal_eval(fixtureData)
+                        # print("Fixture Id; ", fixtureId)
+                        await calculate(input_data, mark_price, fixtureData)
                         rclient.set('last_sent_price', str(mark_price))
                         # rclient.setex("sent_flag", 15, 1)
                     else:

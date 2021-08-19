@@ -14,12 +14,13 @@ path = dir_path + '/fixture.json'
 f = open(path)
 data = json.load(f)
 
+start_diff = int(data['StartDiff'])
 start_end_diff = int(data['StartEndDiff'])
 start_market_diff = int(data['StartMarketDiff'])
 
 if(start_end_diff and start_market_diff):
 
-    STARTTIME = datetime.now()
+    STARTTIME = datetime.now() + timedelta(hours=-1)
     STARTTIME = hour_rounder(STARTTIME)
     print(STARTTIME)
 
@@ -38,4 +39,4 @@ if(start_end_diff and start_market_diff):
         print(start_time, market_end_time, end_time)
         db_add_fixture(1, start_time, market_end_time, end_time)
 
-        STARTTIME = end_time
+        STARTTIME = STARTTIME + timedelta(minutes=start_diff)

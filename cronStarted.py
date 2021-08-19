@@ -15,6 +15,7 @@ USERPOOL = redis.ConnectionPool(
 rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
 
 CURR_TIME = datetime.now()
+print(CURR_TIME)
 
 fixtures = db_get_started_fixture(CURR_TIME)
 print(fixtures)
@@ -41,7 +42,7 @@ if(fixtures != None):
             print(fixtures[0]['id'])
             db_set_fixture_status(fixtures[0]['id'], "STARTED")
             rclient.set("fixtureStarted", str(fixtures[0]['id']))
-            rclient.set("fixtureId", str(fixtures[0]['id']))
+            rclient.sadd("fixtureId", str(fixtures[0]['id']))
 
 endfixtures = db_get_last_started_fixture(CURR_TIME)
 print(endfixtures)
@@ -59,4 +60,6 @@ if(endfixtures != None):
     if(fixtureId != None):
         print('STOP FIXTURE')
         print(fixtureId)
-        rclient.delete("fixtureId")
+        print("Contents of the Redis set:")
+        print(rclient.smembers("fixtureId"))
+        rclient.srem("fixtureId", fixtureId)
