@@ -1,4 +1,5 @@
 {
-    "StartEndDiff": 15,
-    "StartMarketDiff": 10
+    "StartDiff": 10,
+    "StartEndDiff": 20,
+    "StartMarketDiff": 15
 }
