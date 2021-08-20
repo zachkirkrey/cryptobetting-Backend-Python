@@ -9,10 +9,21 @@ import ast
 from db import db_get_ended_fixture, db_set_fixture_status, db_set_fixture_price
 import uuid
 import hashlib
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
 USERPOOL = redis.ConnectionPool(
     host='localhost', port=6379, db=0, decode_responses=True)
 rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
+
+logger = logging.getLogger("Rotating Log")
+logger.setLevel(logging.INFO)
+
+handler = TimedRotatingFileHandler('./owapi1.log',
+                                   when="d",
+                                   interval=7,
+                                   backupCount=3)
+logger.addHandler(handler)
 
 CURR_TIME = datetime.now()
 
@@ -47,7 +58,7 @@ if(fixtures != None):
             seq = str(uuid.uuid4())
             print(seq)
 
-            price = 0
+            price = 1313
             resdisdata = rclient.get('BTC_PRICE')
             if (resdisdata):
                 price = ast.literal_eval(resdisdata)
@@ -63,19 +74,24 @@ if(fixtures != None):
                 }
 
                 print(res)
-
-                SECRET_KEY = os.getenv('OWAPI_SECRET_KEY')
-                access_key = hashlib.md5(
-                    (SECRET_KEY+json.dumps(res)).encode('utf-8')).hexdigest()
-                print('ACCESS KEY: ', access_key)
-                headers = {"content-type": "application/json",
-                            "oneworks-access-key": access_key}
-                print(headers)
-                response = requests.post(
-                    "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndFixture", json=res, headers=headers)
-                print(response)
-                if(response.status_code == 200):
-                    db_set_fixture_price(fixtures[0]['id'], price)
-                    db_set_fixture_status(fixtures[0]['id'], "ENDED")
-                    rclient.set("fixtureEnded", str(fixtures[0]['id']))
-                    # rclient.delete("fixtureId")
+            
+                try:
+                    SECRET_KEY = os.getenv('OWAPI_SECRET_KEY')
+                    access_key = hashlib.md5(
+                        (SECRET_KEY+json.dumps(res)).encode('utf-8')).hexdigest()
+                    print('ACCESS KEY: ', access_key)
+                    headers = {"content-type": "application/json",
+                                "oneworks-access-key": access_key}
+                    print(headers)
+                    response = requests.post(
+                        "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndFixture", json=res, headers=headers)
+                    print(response)
+                    logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - EndFixture Response - %s"% response)
+                    if(response.status_code == 200):
+                        db_set_fixture_price(fixtures[0]['id'], price)
+                        db_set_fixture_status(fixtures[0]['id'], "ENDED")
+                        rclient.set("fixtureEnded", str(fixtures[0]['id']))
+                        # rclient.delete("fixtureId")             
+                except Exception as e:
+                    logger.info(str(CURR_TIME.strftime(
+                        "%m/%d/%Y, %H:%M:%S"))+" - EndFixture Response - %s" % e)

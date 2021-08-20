@@ -10,11 +10,22 @@ from db import db_get_fixture, db_set_fixture_status
 import uuid
 import hashlib
 import pytz
+import logging
+from logging.handlers import TimedRotatingFileHandler
 
 USERPOOL = redis.ConnectionPool(
     host='localhost', port=6379, db=0, decode_responses=True)
 rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
 
+logger = logging.getLogger("Rotating Log")
+logger.setLevel(logging.INFO)
+
+handler = TimedRotatingFileHandler('./owapi1.log',
+                                   when="d",
+                                   interval=7,
+                                   backupCount=3)
+logger.addHandler(handler)
+    
 CURR_TIME = datetime.now()
 
 FIXTURE_TIME = CURR_TIME + timedelta(seconds=18000)
@@ -54,15 +65,19 @@ if(fixtures != None):
                 "EndTime": datetime.utcfromtimestamp(fixtures[0]['endTime']/1000).astimezone(pytz.timezone('America/Antigua')).strftime('%Y/%m/%d %H:%M:%S')
             }
             print(res)
-
-            SECRET_KEY = os.getenv('OWAPI_SECRET_KEY')
-            access_key = hashlib.md5((SECRET_KEY+json.dumps(res)).encode('utf-8')).hexdigest()
-            print('ACCESS KEY: ', access_key)
-            headers = {"content-type": "application/json","oneworks-access-key": access_key}
-            print(headers)
-            response = requests.post("http://owapi1.playthefun.com:9130/api/CryptoCurrency/CreateFixture", json=res, headers=headers)
-            print(response)
-            print(type(response))
-            if(response.status_code == 200 and 'ErrorCode' not in response):
-                db_set_fixture_status(fixtures[0]['id'], "CREATED")
-                rclient.set("fixtureCreated", str(fixtures[0]['id']))
+            try:
+                SECRET_KEY = os.getenv('OWAPI_SECRET_KEY')
+                access_key = hashlib.md5((SECRET_KEY+json.dumps(res)).encode('utf-8')).hexdigest()
+                print('ACCESS KEY: ', access_key)
+                headers = {"content-type": "application/json","oneworks-access-key": access_key}
+                print(headers)
+                response = requests.post("http://owapi1.playthefun.com:9130/api/CryptoCurrency/CreateFixture", json=res, headers=headers)
+                print(response)
+                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture Response - %s"% response)
+                print(type(response))
+                if(response.status_code == 200 and 'ErrorCode' not in response):
+                    db_set_fixture_status(fixtures[0]['id'], "CREATED")
+                    rclient.set("fixtureCreated", str(fixtures[0]['id']))
+            except Exception as e:
+                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S")
+                                )+" - CreateFixture Response - %s" % e)
