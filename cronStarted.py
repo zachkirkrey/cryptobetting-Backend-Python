@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import json
 import math
 import asyncio
+from typing import Match
 import requests
 import redis
 import os
@@ -66,6 +67,13 @@ try:
             print(fixtureId)
             print("Contents of the Redis set:")
             print(rclient.smembers("fixtureId"))
-            rclient.srem("fixtureId", fixtureId)
+            fixtureIds = rclient.smembers('fixtureId')
+            print(fixtureIds)
+            for value in fixtureIds:
+                print(value)
+                val = int(value)
+                if(val <= fixtureId):
+                    rclient.srem("fixtureId", val)
+
 except Exception as e:
     print(e)
