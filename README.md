@@ -91,3 +91,16 @@ gunicorn -w 3 -t 2 -b 0.0.0.0:7000 --timeout 15000 --max-requests 1000 app:app -
 pkill gunicorn
 
 ```
+
+- Run Websocket Server (Node.js)
+
+```
+npm install ws -g
+
+npm install redis -g
+
+npm install pm2 -g
+
+pm2 start "node server.js" --name "websocket server"
+
+```
