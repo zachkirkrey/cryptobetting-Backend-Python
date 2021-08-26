@@ -58,7 +58,7 @@ if(fixtures != None):
             seq = str(uuid.uuid4())
             print(seq)
 
-            price = 1313
+            price = 0
             resdisdata = rclient.get('BTC_PRICE')
             if (resdisdata):
                 price = ast.literal_eval(resdisdata)
