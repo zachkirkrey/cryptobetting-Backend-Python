@@ -185,6 +185,22 @@ def db_set_fixture_price(fixtureId, price, session=None):
         print(e)
         return None
 
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_get_fixture_end_price(fixtureId, session=None):
+    try:
+        check_price = session.query(Fixtures).with_entities(
+            Fixtures.price).filter(Fixtures.id == fixtureId).statement
+        df = pd.read_sql(check_price, engine)
+        if(df.empty):
+            return None
+        else:
+            end_price = df.iloc[0]['price']
+            return end_price
+    except Exception as e:
+        print(e)
+        return None
+
 
 @retry_db((OperationalError, StatementError), n_retries=3)
 @mk_session
