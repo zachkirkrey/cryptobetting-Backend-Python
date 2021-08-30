@@ -6,7 +6,7 @@ import requests
 import redis
 import os
 import ast
-from db import db_get_ended_fixture, db_set_fixture_status, db_set_fixture_price
+from db import db_get_ended_fixture, db_get_fixture, db_set_fixture_status, db_set_fixture_price, db_get_fixture_end_price
 import uuid
 import hashlib
 import logging
@@ -76,6 +76,10 @@ if(fixtures != None):
                 print(res)
             
                 try:
+                    fixture_end_price = db_get_fixture_end_price(fixtures[0]['id'])
+                    if(fixture_end_price == None):
+                        db_set_fixture_price(fixtures[0]['id'], price)
+
                     SECRET_KEY = os.getenv('OWAPI_SECRET_KEY')
                     access_key = hashlib.md5(
                         (SECRET_KEY+json.dumps(res)).encode('utf-8')).hexdigest()
@@ -86,12 +90,12 @@ if(fixtures != None):
                     response = requests.post(
                         "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndFixture", json=res, headers=headers)
                     print(response)
-                    logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - EndFixture Response - %s"% response)
+                    logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - EndFixture - "+str(
+                        fixtures[0]['id'])+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.json()))
                     if(response.status_code == 200):
-                        db_set_fixture_price(fixtures[0]['id'], price)
                         db_set_fixture_status(fixtures[0]['id'], "ENDED")
                         rclient.set("fixtureEnded", str(fixtures[0]['id']))
                         # rclient.delete("fixtureId")             
                 except Exception as e:
-                    logger.info(str(CURR_TIME.strftime(
-                        "%m/%d/%Y, %H:%M:%S"))+" - EndFixture Response - %s" % e)
+                    logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - EndFixture - "+str(
+                        fixtures[0]['id'])+" - Request - "+str(res)+" - Response - "+str(e))

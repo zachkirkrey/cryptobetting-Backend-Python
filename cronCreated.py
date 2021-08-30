@@ -73,11 +73,10 @@ if(fixtures != None):
                 print(headers)
                 response = requests.post("http://owapi1.playthefun.com:9130/api/CryptoCurrency/CreateFixture", json=res, headers=headers)
                 print(response)
-                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture Response - %s"% response)
+                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture - "+str(fixtures[0]['id'])+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.json()) )
                 print(type(response))
                 if(response.status_code == 200 and 'ErrorCode' not in response):
                     db_set_fixture_status(fixtures[0]['id'], "CREATED")
                     rclient.set("fixtureCreated", str(fixtures[0]['id']))
             except Exception as e:
-                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S")
-                                )+" - CreateFixture Response - %s" % e)
+                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture - "+str(fixtures[0]['id'])+" - Request - "+str(res)+" - Response - "+str(e))
