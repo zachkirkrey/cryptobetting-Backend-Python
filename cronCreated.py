@@ -73,7 +73,7 @@ if(fixtures != None):
                 print(headers)
                 response = requests.post("http://owapi1.playthefun.com:9130/api/CryptoCurrency/CreateFixture", json=res, headers=headers)
                 print(response)
-                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture - "+str(fixtures[0]['id'])+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.json()) )
+                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture - "+str(fixtures[0]['id'])+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.text) )
                 print(type(response))
                 if(response.status_code == 200 and 'ErrorCode' not in response):
                     db_set_fixture_status(fixtures[0]['id'], "CREATED")
