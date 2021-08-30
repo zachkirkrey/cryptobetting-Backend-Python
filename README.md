@@ -1,5 +1,52 @@
 # BackEnd
 
+- Install MySQL
+
+follow instructions from below website
+
+https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-20-04
+
+  - Install mysql server
+  - Create user
+  - Create database (amidoribo)
+  
+  ```
+    CREATE DATABASE `amidoribo`;
+    
+  ```
+  - Create table 
+  
+  ```
+    CREATE TABLE `fixtures` (
+    `id` bigint NOT NULL AUTO_INCREMENT,
+    `fixtureType` int DEFAULT NULL,
+    `startTime` datetime DEFAULT NULL,
+    `marketEndTime` datetime DEFAULT NULL,
+    `endTime` datetime DEFAULT NULL,
+    `price` double DEFAULT NULL,
+    `status` varchar(45) DEFAULT 'NOT CREATED',
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=5116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  
+  ```
+  - Create link `<user>,<user-password>,<host>,<port>,<database-name>`
+  
+  ```
+    #for example
+    root,root123,localhost,3306,amidoribo
+    
+  ```
+  - Add link to env
+  
+  ```
+    sudo nano ~/.bashrc
+    
+    #add created link in file and save it
+    
+    BO_DB_URL="root,root123,localhost,3306,amidoribo"
+    
+  ```
+
 - Install Python3
 
 ```
