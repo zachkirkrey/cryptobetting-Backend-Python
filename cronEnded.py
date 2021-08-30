@@ -91,7 +91,7 @@ if(fixtures != None):
                         "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndFixture", json=res, headers=headers)
                     print(response)
                     logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - EndFixture - "+str(
-                        fixtures[0]['id'])+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.json()))
+                        fixtures[0]['id'])+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.text))
                     if(response.status_code == 200):
                         db_set_fixture_status(fixtures[0]['id'], "ENDED")
                         rclient.set("fixtureEnded", str(fixtures[0]['id']))
