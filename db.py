@@ -106,7 +106,7 @@ def db_add_fixture(fixture_type, start_time, market_end_time, end_time, session=
 @mk_session
 def db_get_fixture(fixture_time, session=None):
     try:
-        check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime, Fixtures.status).filter(Fixtures.startTime > fixture_time).order_by(Fixtures.startTime.asc()).limit(1).statement
+        check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime, Fixtures.status).filter(Fixtures.startTime > fixture_time, Fixtures.status == 'NOT CREATED').order_by(Fixtures.startTime.asc()).statement
         df = pd.read_sql(check_fixture, engine)
         if(df.empty):
             return None
