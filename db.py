@@ -152,7 +152,7 @@ def db_get_last_started_fixture(current_time, session=None):
 def db_get_ended_fixture(current_time, session=None):
     try:
         last_time = current_time + timedelta(hours=-24)
-        check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime, Fixtures.status).filter(Fixtures.endTime < current_time, Fixtures.endTime > last_time).order_by(Fixtures.endTime.desc()).statement
+        check_fixture = session.query(Fixtures).with_entities(Fixtures.id, Fixtures.startTime, Fixtures.marketEndTime, Fixtures.endTime, Fixtures.status).filter(Fixtures.endTime < current_time, Fixtures.endTime > last_time, Fixtures.status == 'STARTED').order_by(Fixtures.endTime.desc()).statement
         df = pd.read_sql(check_fixture, engine)
         if(df.empty):
             return None
