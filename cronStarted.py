@@ -104,8 +104,9 @@ try:
                         headers = {"content-type": "application/json",
                                 "oneworks-access-key": access_key}
                         print(headers)
-                        response = requests.post(
-                            "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndMarket", json=res, headers=headers)
+                        URL = os.getenv('OWAPI_HOST') + "/api/CryptoCurrency/EndMarket"
+                        print(URL)
+                        response = requests.post(URL, json=res, headers=headers)
                         print(response)
                         logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - EndMarket - "+str(
                             val)+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.text))

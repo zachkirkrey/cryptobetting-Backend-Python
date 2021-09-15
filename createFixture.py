@@ -87,8 +87,9 @@ if(start_end_diff and start_market_diff):
                 headers = {"content-type": "application/json",
                            "oneworks-access-key": access_key}
                 print(headers)
-                response = requests.post(
-                    "http://owapi1.playthefun.com:9130/api/CryptoCurrency/CreateFixture", json=res, headers=headers)
+                URL = os.getenv('OWAPI_HOST') + "/api/CryptoCurrency/CreateFixture"
+                print(URL)
+                response = requests.post(URL, json=res, headers=headers)
                 print(response)
                 logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture - "+str(
                     fixtureId)+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.text))

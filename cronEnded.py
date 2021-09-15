@@ -88,8 +88,11 @@ if(fixtures != None):
                     headers = {"content-type": "application/json",
                                 "oneworks-access-key": access_key}
                     print(headers)
+                    URL = os.getenv('OWAPI_HOST') + \
+                        "/api/CryptoCurrency/EndFixture"
+                    print(URL)
                     response = requests.post(
-                        "http://owapi1.playthefun.com:9130/api/CryptoCurrency/EndFixture", json=res, headers=headers)
+                        URL, json=res, headers=headers)
                     print(response)
                     logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - EndFixture - "+str(
                         fixture['id'])+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.text))
