@@ -248,10 +248,10 @@ async def calculate(data, PRICE, fixtureIds):
         print(finalJson)
         print('\n\n')
         # with open('output.json', "w+") as f:
-        #     f.write(finalJson)
-
+        #     f.write(finalJson)    
+        URL = os.getenv('MATH_MODEL_URL')
         response = requests.post(
-            "http://18.183.28.37:3000/odds", data=finalJson)
+            URL, data=finalJson)
         # print(response)
         # print(response.json())
         print(json.dumps(response.json()))
