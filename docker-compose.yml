@@ -1,0 +1,22 @@
+services:
+  database:
+    image: cb-mysql-db
+    build:
+      context: ./
+      dockerfile: Dockerfile-db
+    volumes:
+      - db_data:/var/lib/mysql
+    env_file:
+      - .env
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    container_name: cb-mysql
+  redis:
+    image: redis:6.2.4
+    volumes:
+      - /redis/data
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    container_name: cb-redis
+volumes:
+  db_data:

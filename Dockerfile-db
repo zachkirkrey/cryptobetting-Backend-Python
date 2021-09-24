@@ -1,0 +1,3 @@
+FROM mysql
+
+COPY cbDB.sql  /docker-entrypoint-initdb.d/

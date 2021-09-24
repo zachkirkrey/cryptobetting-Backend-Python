@@ -132,3 +132,6 @@ dmypy.json
 
 input.json
 output.json
+
+# package-lock.json
+package-lock.json

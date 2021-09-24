@@ -1,0 +1,16 @@
+FROM node
+
+SHELL ["/bin/bash", "--login", "-c"]
+
+WORKDIR /src/ws
+
+COPY ./ ./
+
+#install pm2 process manager in the machine. -g means global
+RUN npm i pm2 -g
+
+# install package.json dependencies
+RUN  npm i
+
+
+CMD pm2 start "node server.js" --name "websocket server"

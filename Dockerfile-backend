@@ -1,0 +1,12 @@
+FROM python:3.8
+
+WORKDIR /usr/src/backend
+
+COPY ./ ./
+
+RUN sudo apt install python3-testresources
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD [ "bash" ]
+#CMD [ "python", "./your-daemon-or-script.py" ]
