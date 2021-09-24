@@ -4,7 +4,7 @@ const redis = require('redis');
 
 // Configuration: adapt to your environment
 const REDIS_SERVER = process.env.BO_REDIS_URL;
-const WEB_SOCKET_PORT = process.env.BO_WEB_SOCKET_PORT;
+const WEB_SOCKET_PORT = process.env.BO_WEBSOCKET_PORT;
 
 // Connect to Redis and subscribe to "app:notifications" channel
 var redisClient = redis.createClient(REDIS_SERVER);
