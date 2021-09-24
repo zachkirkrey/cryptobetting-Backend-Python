@@ -1,4 +1,13 @@
 services:
+  ws_server: 
+    image: cb-ws-server
+    build:
+      context: ./
+      dockerfile: Dockerfile-ws
+    env_file:
+      - .env
+    ports:
+      - "${BO_WEBSOCKET_PORT}:${BO_WEBSOCKET_PORT}"
   database:
     image: cb-mysql-db
     build:

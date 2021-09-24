@@ -13,4 +13,5 @@ RUN npm i pm2 -g
 RUN  npm i
 
 
-CMD pm2 start "node server.js" --name "websocket server"
+#CMD pm2 start "node server.js" --name "websocket server"
+CMD ["pm2-runtime", "server.js"]
