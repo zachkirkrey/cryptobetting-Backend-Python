@@ -1,4 +1,4 @@
 * * * * * bash /usr/src/backend/cronCreated.sh > /dev/null 2>&1
 * * * * * bash /usr/src/backend/cronStarted.sh > /dev/null 2>&1
 * * * * * bash /usr/src/backend/cronEnded.sh > /dev/null 2>&1
-0 0 * * * bash /usr/src/backend/cronFixture.sh > /dev/null 2>&1
+0 */12 * * * bash /usr/src/backend/cronFixture.sh > /dev/null 2>&1

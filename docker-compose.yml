@@ -19,6 +19,8 @@ services:
       - "${REDIS_PORT}:${REDIS_PORT}"
     container_name: cb-redis
   ws_server: 
+    depends_on:
+      - redis
     image: cb-ws-server
     build:
       context: ./
@@ -28,6 +30,8 @@ services:
     ports:
       - "${BO_WEBSOCKET_PORT}:${BO_WEBSOCKET_PORT}"
   backend:
+    depends_on:
+      - database
     image: cb-backend
     build:
       context: ./
