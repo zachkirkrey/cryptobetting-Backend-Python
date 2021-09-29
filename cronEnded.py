@@ -11,6 +11,7 @@ import uuid
 import hashlib
 import logging
 from logging.handlers import TimedRotatingFileHandler
+import time
 
 USERPOOL = redis.ConnectionPool(
     host='localhost', port=6379, db=0, decode_responses=True)
@@ -24,6 +25,22 @@ handler = TimedRotatingFileHandler('./owapi1.log',
                                    interval=7,
                                    backupCount=3)
 logger.addHandler(handler)
+
+def getBinancePrice(endTimestamp):
+    try:
+        res = requests.get(
+            "https://api3.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&endTime="+str(endTimestamp)+"&limit=1")
+        print(res.json())
+        return float(res.json()[0][1])
+    except Exception as e:
+        print(e)
+        print("Sleeping for 5s ....")
+        time.sleep(5)
+        return 0
+
+
+print("Sleeping for 2s ....")
+time.sleep(2)
 
 CURR_TIME = datetime.now()
 
@@ -59,9 +76,12 @@ if(fixtures != None):
             print(seq)
 
             price = 0
-            resdisdata = rclient.get('BTC_PRICE')
-            if (resdisdata):
-                price = ast.literal_eval(resdisdata)
+            # resdisdata = rclient.get('BTC_PRICE')
+            # if (resdisdata):
+            #     price = ast.literal_eval(resdisdata)
+            
+            price = getBinancePrice(fixture['marketEndTime'])
+            print("BTCUSDT Prcie: ", price)
 
             if(price > 0):
                 res['Timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
