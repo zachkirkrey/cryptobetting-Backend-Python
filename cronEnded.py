@@ -80,7 +80,7 @@ if(fixtures != None):
             # if (resdisdata):
             #     price = ast.literal_eval(resdisdata)
             
-            price = getBinancePrice(fixture['marketEndTime'])
+            price = getBinancePrice(fixture['endTime'])
             print("BTCUSDT Prcie: ", price)
 
             if(price > 0):
