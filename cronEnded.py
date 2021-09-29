@@ -13,7 +13,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 
 USERPOOL = redis.ConnectionPool(
-    host='localhost', port=6379, db=0, decode_responses=True)
+    host=os.getenv('BO_REDIS_HOST'), port=6379, db=0, decode_responses=True)
 rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
 
 logger = logging.getLogger("Rotating Log")
