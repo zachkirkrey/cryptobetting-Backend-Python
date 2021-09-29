@@ -1,4 +1,9 @@
 * * * * * bash /usr/src/backend/cronCreated.sh > /dev/null 2>&1
 * * * * * bash /usr/src/backend/cronStarted.sh > /dev/null 2>&1
 * * * * * bash /usr/src/backend/cronEnded.sh > /dev/null 2>&1
-0 */12 * * * bash /usr/src/backend/cronFixture.sh > /dev/null 2>&1
+0 0 * * * bash /usr/src/backend/cronFixture.sh > /dev/null 2>&1
+
+# * * * * * python3 /usr/src/backend/cronCreated.py 
+# * * * * * python3 /usr/src/backend/cronStarted.py 
+# * * * * * python3 /usr/src/backend/cronEnded.py
+# 0 0 * * * python3 /usr/src/backend/cronFixture.py
