@@ -1,0 +1,56 @@
+version: "3.2"
+services:
+  mysql:
+    image: mysql:5.7
+    networks:
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=root12345
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root12345
+      - MYSQL_DATABASE=amidoribo
+    volumes:
+      - "./:/var/lib/mymysql"
+    container_name: bo-mysql
+  redis:
+    image: redis:6.2.4
+    networks:
+      - backend
+    volumes:
+      - /redis/data
+    ports:
+      - "6378:6378"
+    container_name: bo-redis
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.0
+    depends_on:
+      - mysql
+    networks:
+      - backend
+    ports:
+      - "8000:80"
+    environment:
+      - PMA_HOST=bo-mysql
+      - PMA_PORT= 3306
+    volumes:
+      - /sessions
+    container_name: bo-phpmyadmin
+  python:
+    build: 
+      context: .
+    image: amidori/bo-backend:1.0
+    networks:
+      - frontend
+      - backend
+    environment:
+      - BO_DB_URL='root,root12345,bo-mysql,3306,amidoribo'
+      - OWAPI_SECRET_KEY='8sxy54vjd3ks5cge'
+      - OWAPI_HOST='http://btcuat.edge2cast.com'
+    ports:
+      - "9000:9000"
+    volumes:
+      - "./:/backend"
+    container_name: bo-backend-api
+networks:
+  frontend:
+  backend:
