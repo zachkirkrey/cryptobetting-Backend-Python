@@ -7,6 +7,7 @@ COPY ./ ./
 # cron configuration 
 RUN apt update && apt install -y cron
 RUN crontab crontab-backend
+RUN apt install -y vim
 
 # supervisor configuration 
 RUN apt-get install -y supervisor
