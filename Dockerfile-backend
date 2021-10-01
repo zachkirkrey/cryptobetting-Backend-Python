@@ -2,17 +2,23 @@ FROM python:3.8
 
 WORKDIR /usr/src/backend
 
-COPY ./ ./
-
-# cron configuration 
 RUN apt update && apt install -y cron
-RUN crontab crontab-backend
 RUN apt install -y vim
 
 # supervisor configuration 
 RUN apt-get install -y supervisor
 RUN mkdir -p /var/log/supervisor
-COPY sup-docker.conf /etc/supervisor/conf.d/sup-docker.conf
+
+COPY ./ ./
+
+# cron configuration 
+RUN touch /var/log/cronCreated.log
+RUN touch /var/log/cronStarted.log
+RUN touch /var/log/cronEnded.log
+RUN touch /var/log/cronFixture.log
+RUN crontab crontab-backend
+
+# COPY sup-docker.conf /etc/supervisor/conf.d/sup-docker.conf
 
 # RUN apt update && apt install -y cron
 # COPY crontab-backend /etc/cron.d/example-crontab

@@ -3,7 +3,8 @@
 # * * * * * bash /usr/src/backend/cronEnded.sh > /dev/null 2>&1
 # 0 0 * * * bash /usr/src/backend/cronFixture.sh > /dev/null 2>&1
 
-* * * * * python3 /usr/src/backend/cronCreated.py 
-* * * * * python3 /usr/src/backend/cronStarted.py 
-* * * * * python3 /usr/src/backend/cronEnded.py
-0 0 * * * python3 /usr/src/backend/cronFixture.py
+SHELL=/bin/bash
+* * * * * /usr/local/bin/python3 /usr/src/backend/cronCreated.py >> /var/log/cronCreated.log 2>&1
+* * * * * /usr/local/bin/python3 /usr/src/backend/cronStarted.py >> /var/log/cronStarted.log 2>&1
+* * * * * /usr/local/bin/python3 /usr/src/backend/cronEnded.py >> /var/log/cronEnded.log 2>&1
+0 0 * * * /usr/local/bin/python3 /usr/src/backend/cronFixture.py >> /var/log/cronFixture.log 2>&1
