@@ -23,7 +23,7 @@ from flask_basicauth import BasicAuth
 jwt_secret_key = os.getenv('BO_JWT_SECRET')
 
 USERS_REDIS_HOST = os.getenv('BO_REDIS_HOST')
-USERPOOL = redis.ConnectionPool(host=USERS_REDIS_HOST, port=6379, db=0, decode_responses=True)
+USERPOOL = redis.ConnectionPool(host=USERS_REDIS_HOST, port=os.getenv('REDIS_PORT'), db=0, decode_responses=True)
 rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
 
 
