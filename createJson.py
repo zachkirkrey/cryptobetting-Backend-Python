@@ -241,7 +241,12 @@ async def calculate(data, PRICE, fixtureIds):
             fixtureExpiry = rclient.get("fixtureExpiry_"+str(fixtureId))
             result['asset_price'] = PRICE
             result['time_stamp'] = int(curr_datetime.timestamp())
-            result['expiries'] = int(int(fixtureExpiry)/1000)
+            exp = {}
+            exp['expiry'] = fixtureExpiry
+            exp['strikes'] = EXPIRES[0]['strikes']
+            sendData = []
+            sendData.append(exp)
+            result['expiries'] = sendData
 
             finalJson = json.dumps(result)
             print(finalJson)
