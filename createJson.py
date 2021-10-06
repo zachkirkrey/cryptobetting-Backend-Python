@@ -6,6 +6,20 @@ import requests
 import redis
 import os
 import ast
+import logging
+from logging.handlers import RotatingFileHandler
+logging.basicConfig(
+  handlers=[
+    RotatingFileHandler(
+      'mathModelData.log',
+      maxBytes=10240000,
+      backupCount=1
+    )
+  ],
+  level=logging.INFO,
+  format='%(asctime)s %(levelname)s %(message)s'
+)
+
 from unicorn_binance_websocket_api.unicorn_binance_websocket_api_manager import BinanceWebSocketApiManager
 # from db import db_add_expiries, db_add_probabilities
 
@@ -248,8 +262,9 @@ async def calculate(data, PRICE, fixtureIds):
 			result['expiries'] = EXPIRIES
 
 			finalJson = json.dumps(result)
-			print(finalJson)
-			print('\n\n')
+			logging.info('________________________________________')
+			logging.info(json.dumps(finalJson))
+			
 			# with open('output.json', "w+") as f:
 			#     f.write(finalJson)    
 			URL = os.getenv('MATH_MODEL_URL')
@@ -258,8 +273,9 @@ async def calculate(data, PRICE, fixtureIds):
 			# print(response.json())
 			print("FIXTURE ID: ", fixtureId)
 			print("Fixture Expiry: ",fixtureExpiry)
-			print(json.dumps(response.json()))
-			print('\n\n')
+			logging.info('FIXTURE ID: '+str(fixtureId)+" Fixture Expiry: "+str(fixtureExpiry))
+			logging.info(json.dumps(response.json()))
+			logging.info('________________________________________')
 
 			for j in response.json()['expiries']:
 				odds_id = 1
@@ -369,7 +385,7 @@ async def main():
 							rclient.set('last_sent_price', str(mark_price))
 							rclient.setex("sent_flag", 10, 1)
 					elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
-						fixtureData = rclient.smembers('fixtureId')
+    						fixtureData = rclient.smembers('fixtureId')
 						if (fixtureData and mark_price != last_sent_price):
 							# print(fixtureData)
 							# fixtureId = ast.literal_eval(fixtureData)
