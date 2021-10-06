@@ -237,6 +237,7 @@ async def calculate(data, PRICE, fixtureIds):
         for fixtureId in fixtureIds:
             # print(fixtureId)
             result = {}
+            print("EXP: fixureExpiry_"+str(fixtureId))
             fixtureExpiry = rclient.get("fixureExpiry_"+str(fixtureId))
             result['asset_price'] = PRICE
             result['time_stamp'] = int(curr_datetime.timestamp())
