@@ -360,23 +360,23 @@ async def main():
                     print(0.99*last_sent_price)
                     print(1.01*last_sent_price)
 
-                    # if rclient.get("sent_flag") == None:
-                    #     fixtureData = rclient.get('fixtureId')
-                    #     if (fixtureData):
-                    #         fixtureId = ast.literal_eval(fixtureData)
-                    #         print("Fixture Id; ", fixtureId)
-                    #         await calculate(input_data, mark_price, fixtureId)
-                    #         rclient.set('last_sent_price', str(mark_price))
-                    #         rclient.setex("sent_flag", 15, 1)
-                    # elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
-                    fixtureData = rclient.smembers('fixtureId')
-                    if (fixtureData and mark_price != last_sent_price):
-                        # print(fixtureData)
-                        # fixtureId = ast.literal_eval(fixtureData)
-                        # print("Fixture Id; ", fixtureId)
-                        await calculate(input_data, mark_price, fixtureData)
-                        rclient.set('last_sent_price', str(mark_price))
-                        # rclient.setex("sent_flag", 15, 1)
+                    if rclient.get("sent_flag") == None:
+                        fixtureData = rclient.smembers('fixtureId')
+                        if (fixtureData):
+                            # fixtureId = ast.literal_eval(fixtureData)
+                            # print("Fixture Id; ", fixtureId)
+                            await calculate(input_data, mark_price, fixtureData)
+                            rclient.set('last_sent_price', str(mark_price))
+                            rclient.setex("sent_flag", 10, 1)
+                    elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
+                        fixtureData = rclient.smembers('fixtureId')
+                        if (fixtureData and mark_price != last_sent_price):
+                            # print(fixtureData)
+                            # fixtureId = ast.literal_eval(fixtureData)
+                            # print("Fixture Id; ", fixtureId)
+                            await calculate(input_data, mark_price, fixtureData)
+                            rclient.set('last_sent_price', str(mark_price))
+                            # rclient.setex("sent_flag", 15, 1)
                     else:
                         res = {}
                         res['price'] = mark_price
