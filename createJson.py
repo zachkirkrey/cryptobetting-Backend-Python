@@ -53,200 +53,196 @@ async def calculate(data, PRICE, fixtureIds):
     SLOTS = 2
     EXPIRIES = []
     last_timeline = None
-
+    
     print('INPUT DATA: ', data)
     print('\n\n')
 
     print('PRICE: ', PRICE)
     print('\n')
+    finalOutput = {}
+    expriries = []
+    for fixtureId in fixtureIds:
+        print("EXP: fixureExpiry_"+str(fixtureId))
+        fixtureExpiry = rclient.get("fixtureExpiry_"+str(fixtureId))
+        fixtureExpiry = int(int(fixtureExpiry)/1000)
+        try:
+            for i in range(1, SLOTS+1):
+                try:
+                    exp = {}
 
-    try:
-        for i in range(1, SLOTS+1):
-            try:
-                exp = {}
+                    print('-------------------SLOT-' +str(i)+'-------------------------')
+                    slot_left = data['Slots_left_'+str(i)]
+                    slot_right = data['Slots_right_'+str(i)]
+                    slot_rounding = data['Slot_Rounding_'+str(i)]
+                    # print(slot_left, slot_right, slot_rounding)
 
-                print('-------------------SLOT-' +
-                      str(i)+'-------------------------')
-                slot_left = data['Slots_left_'+str(i)]
-                slot_right = data['Slots_right_'+str(i)]
-                slot_rounding = data['Slot_Rounding_'+str(i)]
-                # print(slot_left, slot_right, slot_rounding)
+                    rounding_left = []
+                    rounding_right = []
+                    rounding_min = min(slot_rounding)
+                    # print(rounding_min)
 
-                rounding_left = []
-                rounding_right = []
-                rounding_min = min(slot_rounding)
-                # print(rounding_min)
+                    # val = PRICE - res
+                    if rounding_min in slot_rounding:
+                        round_to = rounding_min
+                    else:
+                        round_to = 1000
 
-                # val = PRICE - res
-                if rounding_min in slot_rounding:
-                    round_to = rounding_min
-                else:
-                    round_to = 1000
+                    nearest_under = round_to * math.floor((PRICE/round_to))
+                    nearest_over = round_to * math.ceil((PRICE/round_to))
+                    # print(nearest_under)
+                    # print(nearest_over)
+                    rounding_left.append(nearest_under)
+                    rounding_right.append(nearest_over)
 
-                nearest_under = round_to * math.floor((PRICE/round_to))
-                nearest_over = round_to * math.ceil((PRICE/round_to))
-                # print(nearest_under)
-                # print(nearest_over)
-                rounding_left.append(nearest_under)
-                rounding_right.append(nearest_over)
+                    for j in range(0, slot_left-1):
+                        last_under = rounding_left[-1]
+                        next_under = last_under - rounding_min
+                        rounding_left.append(next_under)
 
-                for j in range(0, slot_left-1):
-                    last_under = rounding_left[-1]
-                    next_under = last_under - rounding_min
-                    rounding_left.append(next_under)
+                    rounding_left = sorted(rounding_left, key=int)
+                    print("ROUNDING LEFT: ", rounding_left)
 
-                rounding_left = sorted(rounding_left, key=int)
-                print("ROUNDING LEFT: ", rounding_left)
+                    for j in range(0, slot_right-1):
+                        last_over = rounding_right[-1]
+                        next_over = last_over + rounding_min
+                        rounding_right.append(next_over)
 
-                for j in range(0, slot_right-1):
-                    last_over = rounding_right[-1]
-                    next_over = last_over + rounding_min
-                    rounding_right.append(next_over)
+                    print("ROUNDING RIGHT: ", rounding_right)
 
-                print("ROUNDING RIGHT: ", rounding_right)
+                    strike_prices = rounding_left + rounding_right
+                    print("STRIKING PRICES: ", strike_prices)
 
-                strike_prices = rounding_left + rounding_right
-                print("STRIKING PRICES: ", strike_prices)
+                    if(i == 1):
+                        curr_datetime = datetime.now()
+                        print(curr_datetime)
 
-                if(i == 1):
-                    curr_datetime = datetime.now()
-                    print(curr_datetime)
+                        curr_hour = curr_datetime.hour
+                        curr_minute = curr_datetime.minute
+                        print(curr_hour, curr_minute)
 
-                    curr_hour = curr_datetime.hour
-                    curr_minute = curr_datetime.minute
-                    print(curr_hour, curr_minute)
+                        ct = datetime.now().strftime("%H:%M")
+                        # print(ct)
+                        # print(type(ct))
 
-                    ct = datetime.now().strftime("%H:%M")
-                    # print(ct)
-                    # print(type(ct))
+                        timezone_rounding = data['Timezone_Rounding_'+str(i)]
 
-                    timezone_rounding = data['Timezone_Rounding_'+str(i)]
+                        timestamps = []
+                        time_roundings = []
 
-                    timestamps = []
-                    time_roundings = []
+                        for res in timezone_rounding:
+                            print(res)
+                            if(curr_minute < res):
+                                hour = curr_hour
+                                minute = res
+                                min_diff = res - curr_minute
+                                print("MIN DIFF: ", min_diff)
+                                next_datetime = curr_datetime + \
+                                    timedelta(minutes=min_diff)
+                            elif(curr_minute > res):
+                                hour = curr_hour + 1
+                                minute = res
 
-                    for res in timezone_rounding:
-                        print(res)
-                        if(curr_minute < res):
-                            hour = curr_hour
-                            minute = res
-                            min_diff = res - curr_minute
-                            print("MIN DIFF: ", min_diff)
-                            next_datetime = curr_datetime + \
-                                timedelta(minutes=min_diff)
-                        elif(curr_minute > res):
-                            hour = curr_hour + 1
-                            minute = res
+                                min_diff = res - curr_minute
+                                print("MIN DIFF: ", min_diff)
+                                total_diff = 60 + min_diff
+                                print("MIN DIFF: ", total_diff)
+                                next_datetime = curr_datetime + \
+                                    timedelta(minutes=total_diff)
 
-                            min_diff = res - curr_minute
-                            print("MIN DIFF: ", min_diff)
-                            total_diff = 60 + min_diff
-                            print("MIN DIFF: ", total_diff)
-                            next_datetime = curr_datetime + \
-                                timedelta(minutes=total_diff)
+                            # print(hour, minute)
+                            next_time = str(hour)+":"+str(minute)
+                            timestamps.append(next_time)
+                            time_roundings.append(next_datetime)
 
-                        # print(hour, minute)
-                        next_time = str(hour)+":"+str(minute)
-                        timestamps.append(next_time)
-                        time_roundings.append(next_datetime)
+                        print("Time Rounding: ", timestamps)
+                        print("Time Rounding: ", time_roundings)
 
-                    print("Time Rounding: ", timestamps)
-                    print("Time Rounding: ", time_roundings)
+                        min_time_exp = data['Minimum_time_expiration_'+str(i)]
+                        print("MIN TIME EXPIRY: ", min_time_exp)
 
-                    min_time_exp = data['Minimum_time_expiration_'+str(i)]
-                    print("MIN TIME EXPIRY: ", min_time_exp)
-
-                    min_time_rounding = findNearest(
-                        min_time_exp, time_roundings, curr_datetime)
-                    print("MIN TIMESTAMP: ", min_time_rounding)
-                    # min_hour = min_time_rounding.hour
-                    # min_minute = min_time_rounding.minute
-                    # min_hour_minute = str(min_hour)+":"+str(min_minute)
-                    # print("MIN TIMESTAMP: ", min_hour_minute)
-                    print('\n\n')
-
-                    total_timelines = data['Timelines_'+str(i)]
-                    timelines_gap = data['Timezone_Gap_'+str(i)]
-                    print(timelines_gap)
-
-                    if(total_timelines > 0):
-
-                        exp['expiry'] = int(min_time_rounding.timestamp())
-                        exp['strikes'] = strike_prices
-
-                        EXPIRIES.append(exp)
-
-                        last_timeline = min_time_rounding
-
-                        for k in range(0, total_timelines-1):
-                            exp = {}
-                            next_min_time_rounding = min_time_rounding + \
-                                timedelta(minutes=timelines_gap)
-                            print("NEXT MIN TIMESTAMP: ", next_min_time_rounding)
-                            # next_min_hour = next_min_time_rounding.hour
-                            # next_min_minute = next_min_time_rounding.minute
-                            # next_min_hour_minute = str(next_min_hour)+":"+str(next_min_minute)
-                            # print("NEXT MIN TIMESTAMP: ", next_min_hour_minute)
-                            min_time_rounding = next_min_time_rounding
-                            print('\n\n')
-
-                            exp['expiry'] = int(
-                                next_min_time_rounding.timestamp())
-                            exp['strikes'] = strike_prices
-
-                            EXPIRIES.append(exp)
-
-                            last_timeline = next_min_time_rounding
-                else:
-                    if(last_timeline != None):
-                        print("LAST TIMELINE OF SLOT " + str(i-1)+": ", last_timeline)
+                        min_time_rounding = findNearest(
+                            min_time_exp, time_roundings, curr_datetime)
+                        print("MIN TIMESTAMP: ", min_time_rounding)
+                        # min_hour = min_time_rounding.hour
+                        # min_minute = min_time_rounding.minute
+                        # min_hour_minute = str(min_hour)+":"+str(min_minute)
+                        # print("MIN TIMESTAMP: ", min_hour_minute)
+                        print('\n\n')
 
                         total_timelines = data['Timelines_'+str(i)]
                         timelines_gap = data['Timezone_Gap_'+str(i)]
                         print(timelines_gap)
 
                         if(total_timelines > 0):
-                            next_min_time_rounding = last_timeline + timedelta(minutes=timelines_gap)
-                            exp['expiry'] = int(next_min_time_rounding.timestamp())
+
+                            exp['expiry'] = fixtureExpiry
                             exp['strikes'] = strike_prices
 
                             EXPIRIES.append(exp)
 
+                            last_timeline = min_time_rounding
+
                             for k in range(0, total_timelines-1):
                                 exp = {}
-                                next_min_time_rounding = next_min_time_rounding + timedelta(minutes=timelines_gap)
+                                next_min_time_rounding = min_time_rounding + \
+                                    timedelta(minutes=timelines_gap)
                                 print("NEXT MIN TIMESTAMP: ", next_min_time_rounding)
                                 # next_min_hour = next_min_time_rounding.hour
                                 # next_min_minute = next_min_time_rounding.minute
                                 # next_min_hour_minute = str(next_min_hour)+":"+str(next_min_minute)
                                 # print("NEXT MIN TIMESTAMP: ", next_min_hour_minute)
-                                # last_timeline = next_min_time_rounding
+                                min_time_rounding = next_min_time_rounding
                                 print('\n\n')
 
-                                exp['expiry'] = int( next_min_time_rounding.timestamp())
+                                exp['expiry'] = fixtureExpiry
                                 exp['strikes'] = strike_prices
 
                                 EXPIRIES.append(exp)
 
-            except Exception as e:
-                print(e)
+                                last_timeline = next_min_time_rounding
+                    else:
+                        if(last_timeline != None):
+                            print("LAST TIMELINE OF SLOT " + str(i-1)+": ", last_timeline)
 
-        
-        finalOutput = {}
-        expriries = []
-        for fixtureId in fixtureIds:
+                            total_timelines = data['Timelines_'+str(i)]
+                            timelines_gap = data['Timezone_Gap_'+str(i)]
+                            print(timelines_gap)
+
+                            if(total_timelines > 0):
+                                next_min_time_rounding = last_timeline + timedelta(minutes=timelines_gap)
+                                exp['expiry'] = int(next_min_time_rounding.timestamp())
+                                exp['strikes'] = strike_prices
+
+                                EXPIRIES.append(exp)
+
+                                for k in range(0, total_timelines-1):
+                                    exp = {}
+                                    next_min_time_rounding = next_min_time_rounding + timedelta(minutes=timelines_gap)
+                                    print("NEXT MIN TIMESTAMP: ", next_min_time_rounding)
+                                    # next_min_hour = next_min_time_rounding.hour
+                                    # next_min_minute = next_min_time_rounding.minute
+                                    # next_min_hour_minute = str(next_min_hour)+":"+str(next_min_minute)
+                                    # print("NEXT MIN TIMESTAMP: ", next_min_hour_minute)
+                                    # last_timeline = next_min_time_rounding
+                                    print('\n\n')
+
+                                    exp['expiry'] = fixtureExpiry
+                                    exp['strikes'] = strike_prices
+
+                                    EXPIRIES.append(exp)
+
+                except Exception as e:
+                    print(e)
+
+            
+            
             # print(fixtureId)
             result = {}
-            print("EXP: fixureExpiry_"+str(fixtureId))
-            fixtureExpiry = rclient.get("fixtureExpiry_"+str(fixtureId))
+            
             result['asset_price'] = PRICE
             result['time_stamp'] = int(curr_datetime.timestamp())
-            exp = {}
-            exp['expiry'] = int(int(fixtureExpiry)/1000)
-            exp['strikes'] = EXPIRIES[0]['strikes']
-            sendData = []
-            sendData.append(exp)
-            result['expiries'] = sendData
+
+            result['expiries'] = EXPIRIES
 
             finalJson = json.dumps(result)
             print(finalJson)
@@ -291,22 +287,22 @@ async def calculate(data, PRICE, fixtureIds):
 
                 expriries.append(expiry)
 
-        if(len(expriries) > 0):
-            finalOutput['price'] = PRICE
-            finalOutput['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
-            finalOutput['type'] = 2
-            # finalOutput['rake_over'] = data['Rake_over']
-            # finalOutput['rake_under'] = data['Rake_under']
-            finalOutput['fixtures'] = expriries
-            
-            print(json.dumps(finalOutput))
-            print('\n\n')
+    if(len(expriries) > 0):
+        finalOutput['price'] = PRICE
+        finalOutput['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
+        finalOutput['type'] = 2
+        # finalOutput['rake_over'] = data['Rake_over']
+        # finalOutput['rake_under'] = data['Rake_under']
+        finalOutput['fixtures'] = expriries
+        
+        print(json.dumps(finalOutput))
+        print('\n\n')
 
-            rclient.set('BO-DATA', json.dumps(finalOutput))
-            rclient.publish('BO-DATA', json.dumps(finalOutput))
+        rclient.set('BO-DATA', json.dumps(finalOutput))
+        rclient.publish('BO-DATA', json.dumps(finalOutput))
 
-        refresh_rate = data['Refresh_rate']
-        await asyncio.sleep(refresh_rate)
+    # refresh_rate = data['Refresh_rate']
+    # await asyncio.sleep(refresh_rate)
 
     except Exception as e:
         print(e)
@@ -366,7 +362,7 @@ async def main():
                             # print("Fixture Id; ", fixtureId)
                             await calculate(input_data, mark_price, fixtureData)
                             rclient.set('last_sent_price', str(mark_price))
-                            rclient.setex("sent_flag", 9, 1)
+                            rclient.setex("sent_flag", 10, 1)
                     elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
                         fixtureData = rclient.smembers('fixtureId')
                         if (fixtureData and mark_price != last_sent_price):
