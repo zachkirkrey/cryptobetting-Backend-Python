@@ -256,6 +256,8 @@ async def calculate(data, PRICE, fixtureIds):
 			response = requests.post(URL, data=finalJson)
 			# print(response)
 			# print(response.json())
+			print("FIXTURE ID: ", fixtureId)
+			print("Fixture Expiry: ",fixtureExpiry)
 			print(json.dumps(response.json()))
 			print('\n\n')
 
