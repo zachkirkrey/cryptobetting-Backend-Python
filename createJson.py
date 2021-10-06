@@ -367,7 +367,7 @@ async def main():
                             # print("Fixture Id; ", fixtureId)
                             await calculate(input_data, mark_price, fixtureData)
                             rclient.set('last_sent_price', str(mark_price))
-                            rclient.setex("sent_flag", 10, 1)
+                            rclient.setex("sent_flag", 9, 1)
                     elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
                         fixtureData = rclient.smembers('fixtureId')
                         if (fixtureData and mark_price != last_sent_price):
