@@ -42,6 +42,6 @@ try:
             print(fixture['id'])
             print(fixture['status'])
 
-        rclient.set("fixtureExpiry_"+str(fixture['id']), fixture['endTime'])
+            rclient.set("fixtureExpiry_"+str(fixture['id']), fixture['endTime'])
 except Exception as e:
     print(e)
