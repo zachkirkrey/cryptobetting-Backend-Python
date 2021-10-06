@@ -51,7 +51,7 @@ def get_config_data():
 
 async def calculate(data, PRICE, fixtureIds):
 	SLOTS = 2
-	EXPIRIES = []
+	
 	last_timeline = None
 	
 	print('INPUT DATA: ', data)
@@ -61,9 +61,11 @@ async def calculate(data, PRICE, fixtureIds):
 	print('\n')
 	
 	try:
-
 		finalOutput = {}
+
+		expriries = []
 		for fixtureId in fixtureIds:
+			EXPIRIES = []
 			print("EXP: fixureExpiry_"+str(fixtureId))
 			fixtureExpiry = rclient.get("fixtureExpiry_"+str(fixtureId))
 			fixtureExpiry = int(int(fixtureExpiry)/1000)
@@ -240,7 +242,6 @@ async def calculate(data, PRICE, fixtureIds):
 			
 			# print(fixtureId)
 			result = {}
-			expriries = []
 			result['asset_price'] = PRICE
 			result['time_stamp'] = int(curr_datetime.timestamp())
 
