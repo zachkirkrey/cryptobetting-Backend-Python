@@ -182,8 +182,7 @@ async def calculate(data, PRICE, fixtureIds):
                             exp = {}
                             next_min_time_rounding = min_time_rounding + \
                                 timedelta(minutes=timelines_gap)
-                            print("NEXT MIN TIMESTAMP: ",
-                                  next_min_time_rounding)
+                            print("NEXT MIN TIMESTAMP: ", next_min_time_rounding)
                             # next_min_hour = next_min_time_rounding.hour
                             # next_min_minute = next_min_time_rounding.minute
                             # next_min_hour_minute = str(next_min_hour)+":"+str(next_min_minute)
@@ -200,28 +199,23 @@ async def calculate(data, PRICE, fixtureIds):
                             last_timeline = next_min_time_rounding
                 else:
                     if(last_timeline != None):
-                        print("LAST TIMELINE OF SLOT " +
-                              str(i-1)+": ", last_timeline)
+                        print("LAST TIMELINE OF SLOT " + str(i-1)+": ", last_timeline)
 
                         total_timelines = data['Timelines_'+str(i)]
                         timelines_gap = data['Timezone_Gap_'+str(i)]
                         print(timelines_gap)
 
                         if(total_timelines > 0):
-                            next_min_time_rounding = last_timeline + \
-                                timedelta(minutes=timelines_gap)
-                            exp['expiry'] = int(
-                                next_min_time_rounding.timestamp())
+                            next_min_time_rounding = last_timeline + timedelta(minutes=timelines_gap)
+                            exp['expiry'] = int(next_min_time_rounding.timestamp())
                             exp['strikes'] = strike_prices
 
                             EXPIRIES.append(exp)
 
                             for k in range(0, total_timelines-1):
                                 exp = {}
-                                next_min_time_rounding = next_min_time_rounding + \
-                                    timedelta(minutes=timelines_gap)
-                                print("NEXT MIN TIMESTAMP: ",
-                                      next_min_time_rounding)
+                                next_min_time_rounding = next_min_time_rounding + timedelta(minutes=timelines_gap)
+                                print("NEXT MIN TIMESTAMP: ", next_min_time_rounding)
                                 # next_min_hour = next_min_time_rounding.hour
                                 # next_min_minute = next_min_time_rounding.minute
                                 # next_min_hour_minute = str(next_min_hour)+":"+str(next_min_minute)
@@ -229,8 +223,7 @@ async def calculate(data, PRICE, fixtureIds):
                                 # last_timeline = next_min_time_rounding
                                 print('\n\n')
 
-                                exp['expiry'] = int(
-                                    next_min_time_rounding.timestamp())
+                                exp['expiry'] = int( next_min_time_rounding.timestamp())
                                 exp['strikes'] = strike_prices
 
                                 EXPIRIES.append(exp)
@@ -238,29 +231,29 @@ async def calculate(data, PRICE, fixtureIds):
             except Exception as e:
                 print(e)
 
-        result = {}
-
-        result['asset_price'] = PRICE
-        result['time_stamp'] = int(curr_datetime.timestamp())
-        result['expiries'] = EXPIRIES
-
-        finalJson = json.dumps(result)
-        print(finalJson)
-        print('\n\n')
-        # with open('output.json', "w+") as f:
-        #     f.write(finalJson)    
-        URL = os.getenv('MATH_MODEL_URL')
-        response = requests.post(
-            URL, data=finalJson)
-        # print(response)
-        # print(response.json())
-        print(json.dumps(response.json()))
-        print('\n\n')
-
+        
         finalOutput = {}
         expriries = []
         for fixtureId in fixtureIds:
             # print(fixtureId)
+            result = {}
+            fixtureExpiry = rclient.get("fixureExpiry_"+str(fixtureId))
+            result['asset_price'] = PRICE
+            result['time_stamp'] = int(curr_datetime.timestamp())
+            result['expiries'] = int(fixtureExpiry)
+
+            finalJson = json.dumps(result)
+            print(finalJson)
+            print('\n\n')
+            # with open('output.json', "w+") as f:
+            #     f.write(finalJson)    
+            URL = os.getenv('MATH_MODEL_URL')
+            response = requests.post(URL, data=finalJson)
+            # print(response)
+            # print(response.json())
+            print(json.dumps(response.json()))
+            print('\n\n')
+
             for j in response.json()['expiries']:
                 odds_id = 1
                 expiry = {}
