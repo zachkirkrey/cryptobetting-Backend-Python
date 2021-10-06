@@ -47,7 +47,7 @@ server.on('connection', function connection(ws) {
                 if (err ) {
                     ws.send(JSON.stringify({ "pong": "2" }));
                 }
-                console.log("BTC PRICE: ", price);
+                //console.log("BTC PRICE: ", price);
                 if (price == null) {
                     ws.send(JSON.stringify({ "pong": "2" }));
                 }
@@ -61,7 +61,7 @@ server.on('connection', function connection(ws) {
 
     // broadcast on web socket when receving a Redis PUB/SUB Event
     redisClient.on('message', function (channel, message) {
-        console.log(message);
+        //console.log(message);
         ws.send(message);        
     })
 
