@@ -61,11 +61,12 @@ async def calculate(data, PRICE, fixtureIds):
     print('\n')
     finalOutput = {}
     expriries = []
-    for fixtureId in fixtureIds:
-        print("EXP: fixureExpiry_"+str(fixtureId))
-        fixtureExpiry = rclient.get("fixtureExpiry_"+str(fixtureId))
-        fixtureExpiry = int(int(fixtureExpiry)/1000)
-        try:
+	try:
+		for fixtureId in fixtureIds:
+			print("EXP: fixureExpiry_"+str(fixtureId))
+			fixtureExpiry = rclient.get("fixtureExpiry_"+str(fixtureId))
+			fixtureExpiry = int(int(fixtureExpiry)/1000)
+			
             for i in range(1, SLOTS+1):
                 try:
                     exp = {}
@@ -287,19 +288,19 @@ async def calculate(data, PRICE, fixtureIds):
 
                 expriries.append(expiry)
 
-    if(len(expriries) > 0):
-        finalOutput['price'] = PRICE
-        finalOutput['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
-        finalOutput['type'] = 2
-        # finalOutput['rake_over'] = data['Rake_over']
-        # finalOutput['rake_under'] = data['Rake_under']
-        finalOutput['fixtures'] = expriries
-        
-        print(json.dumps(finalOutput))
-        print('\n\n')
+		if(len(expriries) > 0):
+			finalOutput['price'] = PRICE
+			finalOutput['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
+			finalOutput['type'] = 2
+			# finalOutput['rake_over'] = data['Rake_over']
+			# finalOutput['rake_under'] = data['Rake_under']
+			finalOutput['fixtures'] = expriries
+			
+			print(json.dumps(finalOutput))
+			print('\n\n')
 
-        rclient.set('BO-DATA', json.dumps(finalOutput))
-        rclient.publish('BO-DATA', json.dumps(finalOutput))
+			rclient.set('BO-DATA', json.dumps(finalOutput))
+			rclient.publish('BO-DATA', json.dumps(finalOutput))
 
     # refresh_rate = data['Refresh_rate']
     # await asyncio.sleep(refresh_rate)
