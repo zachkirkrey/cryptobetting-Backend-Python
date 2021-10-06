@@ -262,7 +262,7 @@ async def calculate(data, PRICE, fixtureIds):
 			result['expiries'] = EXPIRIES
 
 			finalJson = json.dumps(result)
-			logging.info('________________________________________')
+			logging.info('FIXTURE ID: '+str(fixtureId)+" Fixture Expiry: "+str(fixtureExpiry))
 			logging.info(json.dumps(finalJson))
 			
 			# with open('output.json', "w+") as f:
@@ -271,9 +271,9 @@ async def calculate(data, PRICE, fixtureIds):
 			response = requests.post(URL, data=finalJson)
 			# print(response)
 			# print(response.json())
-			print("FIXTURE ID: ", fixtureId)
-			print("Fixture Expiry: ",fixtureExpiry)
-			logging.info('FIXTURE ID: '+str(fixtureId)+" Fixture Expiry: "+str(fixtureExpiry))
+			# print("FIXTURE ID: ", fixtureId)
+			# print("Fixture Expiry: ",fixtureExpiry)
+			
 			logging.info(json.dumps(response.json()))
 			logging.info('________________________________________')
 
