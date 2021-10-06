@@ -243,7 +243,7 @@ async def calculate(data, PRICE, fixtureIds):
             result['time_stamp'] = int(curr_datetime.timestamp())
             exp = {}
             exp['expiry'] = fixtureExpiry
-            exp['strikes'] = EXPIRES[0]['strikes']
+            exp['strikes'] = EXPIRIES[0]['strikes']
             sendData = []
             sendData.append(exp)
             result['expiries'] = sendData
