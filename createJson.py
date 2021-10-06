@@ -210,8 +210,7 @@ async def calculate(data, PRICE, fixtureIds):
                         if(total_timelines > 0):
                             next_min_time_rounding = last_timeline + \
                                 timedelta(minutes=timelines_gap)
-                            exp['expiry'] = int(
-                                next_min_time_rounding.timestamp())
+                            exp['expiry'] = int(next_min_time_rounding.timestamp())
                             exp['strikes'] = strike_prices
 
                             EXPIRIES.append(exp)
@@ -238,29 +237,29 @@ async def calculate(data, PRICE, fixtureIds):
             except Exception as e:
                 print(e)
 
-        result = {}
-
-        result['asset_price'] = PRICE
-        result['time_stamp'] = int(curr_datetime.timestamp())
-        result['expiries'] = EXPIRIES
-
-        finalJson = json.dumps(result)
-        print(finalJson)
-        print('\n\n')
-        # with open('output.json', "w+") as f:
-        #     f.write(finalJson)    
-        URL = os.getenv('MATH_MODEL_URL')
-        response = requests.post(
-            URL, data=finalJson)
-        # print(response)
-        # print(response.json())
-        print(json.dumps(response.json()))
-        print('\n\n')
-
+        
         finalOutput = {}
         expriries = []
         for fixtureId in fixtureIds:
             # print(fixtureId)
+            result = {}
+            fixtureExpiry = rclient.get("fixureExpiry_"+str(fixtureId))
+            result['asset_price'] = PRICE
+            result['time_stamp'] = int(curr_datetime.timestamp())
+            result['expiries'] = fixtureExpiry
+
+            finalJson = json.dumps(result)
+            print(finalJson)
+            print('\n\n')
+            # with open('output.json', "w+") as f:
+            #     f.write(finalJson)    
+            URL = os.getenv('MATH_MODEL_URL')
+            response = requests.post(URL, data=finalJson)
+            # print(response)
+            # print(response.json())
+            print(json.dumps(response.json()))
+            print('\n\n')
+
             for j in response.json()['expiries']:
                 odds_id = 1
                 expiry = {}
