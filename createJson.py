@@ -277,7 +277,7 @@ async def calculate(data, PRICE, fixtureIds):
 			logging.info(json.dumps(response.json()))
 			logging.info('________________________________________')
 			if "error" in response.json():
-    			continue
+				continue
 			for j in response.json()['expiries']:
 				odds_id = 1
 				expiry = {}
