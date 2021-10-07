@@ -6,6 +6,7 @@ import requests
 import redis
 import os
 import ast
+import traceback
 import logging
 from logging.handlers import RotatingFileHandler
 logging.basicConfig(
@@ -250,6 +251,7 @@ async def calculate(data, PRICE, fixtureIds):
 									EXPIRIES.append(exp)
 
 				except Exception as e:
+					traceback.print_exc()
 					print(e)
 
 			
@@ -328,6 +330,7 @@ async def calculate(data, PRICE, fixtureIds):
 
 	except Exception as e:
 		print(e)
+		traceback.print_exc()
 		return {}
 
 
