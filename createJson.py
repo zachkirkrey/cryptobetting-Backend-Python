@@ -393,7 +393,7 @@ async def main():
 							# print("Fixture Id; ", fixtureId)
 							await calculate(input_data, mark_price, fixtureData)
 							rclient.set('last_sent_price', str(mark_price))
-							# rclient.setex("sent_flag", 15, 1)
+							rclient.setex("sent_flag", 10, 1)
 					else:
 						res = {}
 						res['price'] = mark_price
