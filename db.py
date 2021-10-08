@@ -2,7 +2,7 @@ from datetime import timedelta
 import time
 from typing import ClassVar
 import pandas as pd
-from models import Fixtures, engine, session, OperationalError, StatementError, wraps, Expiries, Probabilities
+from models import Fixtures, engine, session, OperationalError, StatementError, wraps, Expiries, PnlData
 
 def mk_session(fun):
     def wrapper(*args, **kwargs):
@@ -57,30 +57,30 @@ def db_add_expiries(expiry, btc_price, rake_over, rake_under, session=None):
 
 @retry_db((OperationalError, StatementError), n_retries=3)
 @mk_session
-def db_add_probabilities(idexpiries, odds_id, strike, over, under, session=None):
+def db_add_pnldata(fixtureId, price, strike, over, under, timestamp, endTime, session=None):
     try:
-        insert_probability = Probabilities(
-            idexpiries=idexpiries, odds_id=odds_id, strike=strike, over=over, under=under)
+        insert_probability = PnlData(
+            fixtureId=fixtureId, price=price, strike=strike, over=over, under=under, timestamp=timestamp, endTime=endTime)
         session.add(insert_probability)
         session.commit()
-        return insert_probability.idprobabilities
+        return insert_probability.idpnldata
     except Exception as e:
         print(e)
         return 0
 
-@retry_db((OperationalError, StatementError), n_retries=3)
-@mk_session
-def db_get_expiry_data(expiry, odds_id, session=None):
-    try:
-        check_user = session.query(Expiries, Probabilities).with_entities(Expiries.expiry, Expiries.btc_price, Expiries.rake_over, Expiries.rake_under, Probabilities.odds_id, Probabilities.strike, Probabilities.over, Probabilities.under).filter(Expiries.expiry == expiry, Probabilities.odds_id == odds_id,Expiries.idexpiries == Probabilities.idexpiries).statement
-        df = pd.read_sql(check_user, engine)
-        if(df.empty):
-            return None
-        else:
-            return df.to_json(orient="records")
-    except Exception as e:
-        print(e)
-        return None
+# @retry_db((OperationalError, StatementError), n_retries=3)
+# @mk_session
+# def db_get_expiry_data(expiry, odds_id, session=None):
+#     try:
+#         check_user = session.query(Expiries, Probabilities).with_entities(Expiries.expiry, Expiries.btc_price, Expiries.rake_over, Expiries.rake_under, Probabilities.odds_id, Probabilities.strike, Probabilities.over, Probabilities.under).filter(Expiries.expiry == expiry, Probabilities.odds_id == odds_id,Expiries.idexpiries == Probabilities.idexpiries).statement
+#         df = pd.read_sql(check_user, engine)
+#         if(df.empty):
+#             return None
+#         else:
+#             return df.to_json(orient="records")
+#     except Exception as e:
+#         print(e)
+#         return None
 
 
 @retry_db((OperationalError, StatementError), n_retries=3)
@@ -268,6 +268,37 @@ def db_get_fixtures_by_id(from_fixture=None, to_fixture=None, session=None):
             return None
         else:
             return df.to_json(orient="records")
+    except Exception as e:
+        print(e)
+        return None
+
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_get_fixture_pnl_data(fixtureId, session=None):
+    try:
+        # print(status)
+        check_fixture = session.query().with_entities(PnlData.idpnldata, PnlData.strike, PnlData.over, PnlData.under, PnlData.bidAmount).filter(PnlData.fixtureId == fixtureId).statement
+        df = pd.read_sql(check_fixture, engine)
+        # print(check_fixture.compile(engine))
+        if(df.empty):
+            return None
+        else:
+            return df.to_json(orient="records")
+    except Exception as e:
+        print(e)
+        return None
+
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_update_fixture_pnl(idPnlData, price, overPnl, underPnl, session=None):
+    try:
+        update_pnl = {'endPrice': price, 'overPnl': overPnl, 'underPnl': underPnl}
+        session.query(PnlData).filter(PnlData.idpnldata == idPnlData).update(
+            update_pnl, synchronize_session=False)
+        session.commit()
+        return True
     except Exception as e:
         print(e)
         return None

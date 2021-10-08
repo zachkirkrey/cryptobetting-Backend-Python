@@ -42,16 +42,22 @@ class Expiries(Base):
     rake_under = Column(Float) 
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
 
-class Probabilities(Base):
-    __tablename__ = 'probabilities'
 
-    idprobabilities = Column(Integer, primary_key=True)
-    idexpiries = Column(ForeignKey('expiries.idexpiries', ondelete='RESTRICT', onupdate='RESTRICT'), index=True)
-    odds_id = Column(Integer)
+class PnlData(Base):
+    __tablename__ = 'pnldata'
+
+    idpnldata = Column(Integer, primary_key=True)
+    fixtureId = Column(ForeignKey('fixtures.id', ondelete='RESTRICT', onupdate='RESTRICT'), index=True)
+    price = Column(Float)
     strike = Column(Float)
     over = Column(Float)
     under = Column(Float)
-    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
+    endPrice = Column(Float)
+    bidAmount = Column(Float)
+    overPnl = Column(Float)
+    underPnl = Column(Float)
+    timestamp = Column(TIMESTAMP)
+    endTime = Column(TIMESTAMP)
 
 class Fixtures(Base):
     __tablename__ = 'fixtures'
