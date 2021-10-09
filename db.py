@@ -57,10 +57,10 @@ def db_add_expiries(expiry, btc_price, rake_over, rake_under, session=None):
 
 @retry_db((OperationalError, StatementError), n_retries=3)
 @mk_session
-def db_add_pnldata(fixtureId, price, strike, over, under, timestamp, endTime, session=None):
+def db_add_pnldata(fixtureId, price, strike, probability, over, under, timestamp, endTime, session=None):
     try:
         insert_probability = PnlData(
-            fixtureId=fixtureId, price=price, strike=strike, over=over, under=under, timestamp=timestamp, endTime=endTime)
+            fixtureId=fixtureId, price=price, strike=strike, probability=probability, over=over, under=under, bidAmount=100, timestamp=timestamp, endTime=endTime)
         session.add(insert_probability)
         session.commit()
         return insert_probability.idpnldata
