@@ -50,6 +50,7 @@ class PnlData(Base):
     fixtureId = Column(ForeignKey('fixtures.id', ondelete='RESTRICT', onupdate='RESTRICT'), index=True)
     price = Column(Float)
     strike = Column(Float)
+    probability = Column(Float)
     over = Column(Float)
     under = Column(Float)
     endPrice = Column(Float)
