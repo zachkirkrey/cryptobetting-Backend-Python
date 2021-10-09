@@ -11,11 +11,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 logging.basicConfig(
   handlers=[
-    RotatingFileHandler(
-      'mathModelData.log',
-      maxBytes=10240000,
-      backupCount=1
-    )
+	RotatingFileHandler(
+	  'mathModelData.log',
+	  maxBytes=10240000,
+	  backupCount=1
+	)
   ],
   level=logging.INFO,
   format='%(asctime)s %(levelname)s %(message)s'
@@ -302,6 +302,15 @@ async def calculate(data, PRICE, fixtureIds):
 					probability['over'] = float('{:.3g}'.format(rake_over))
 					probability['under'] = float('{:.3g}'.format(rake_under))
 
+					rclient.set("fixtureProb_"+str(fixtureId)+"_"+str(prob['strike']), float('{:.3g}'.format(prob['probability'])))
+
+					# print('Timestamp :', int(curr_datetime.timestamp()))
+					# print('ExpiryTime :', fixtureExpiry)
+					# print('BTC price :', PRICE)
+					# print('Strike price :', prob['strike'])
+					# print('Over :', float('{:.3g}'.format(rake_over)))
+					# print('Under :', float('{:.3g}'.format(rake_under)))
+					
 					# db_add_probabilities(idexpiries, odds_id, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
 
 					probabilities.append(probability)
