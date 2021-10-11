@@ -130,7 +130,7 @@ dmypy.json
 .pyre/
 
 
-input.json
+#input.json
 output.json
 
 # package-lock.json

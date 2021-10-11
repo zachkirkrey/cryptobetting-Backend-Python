@@ -1,0 +1,35 @@
+{
+    "Refresh_rate": 1,
+    "Asset": "BTC",
+    "Slots_left_1": 2,
+    "Slots_right_1": 3,
+    "Slots_left_2": 2,
+    "Slots_right_2": 3,
+    "Slot_Rounding_1": [
+        100
+    ],
+    "Slot_Rounding_2": [
+        250
+    ],
+    "Gap": 100,
+    "Timezone": "UTC+0",
+    "Timezone_Rounding_1": [
+        0,
+        15,
+        30,
+        45
+    ],
+    "Minimum_time_expiration_1": 7,
+    "Timezone_Gap_1": 15,
+    "Timelines_1": 1,
+    "Timezone_Rounding_2": [
+        0
+    ],
+    "Minimum_time_expiration_2": 10,
+    "Timezone_Gap_2": 120,
+    "Timelines_2": 0,
+    "Rake_under": 0.03,
+    "Rake_over": 0.03,
+    "Price_change": 0.0005
+}
+
