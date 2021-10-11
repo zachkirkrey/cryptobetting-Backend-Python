@@ -294,8 +294,17 @@ async def calculate(data, PRICE, fixtureIds):
 					# print(prob)
 					over_prob = prob['probability']
 					under_prob = (1 - over_prob)
-					rake_over = (1 - data['Rake_over']) * (1 / over_prob)
-					rake_under = (1 - data['Rake_under']) * (1 / under_prob)
+					rake_over_val = 0
+					rake_under_val = 0
+					if(over_prob>0.5):
+						rake_over_val = 0.95
+						rake_under_val = 0.99
+					if(over_prob <= 0.5):
+						rake_over_val = 0.99
+						rake_under_val = 0.95
+
+					rake_over = rake_over_val * (1 / over_prob)
+					rake_under = rake_under_val * (1 / under_prob)
 
 					# probability['odds_id'] = odds_id
 					probability['strike'] = prob['strike']
