@@ -56,6 +56,7 @@ try:
                 db_set_fixture_status(fixtures[0]['id'], "STARTED")
                 rclient.set("fixtureStarted", str(fixtures[0]['id']))
                 rclient.sadd("fixtureId", str(fixtures[0]['id']))
+                rclient.set("fixtureExpiry_" +str(fixtures[0]['id']), fixtures[0]['endTime'])
 except Exception as e:
     print(e)
 
