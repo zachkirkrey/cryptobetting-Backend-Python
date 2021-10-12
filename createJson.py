@@ -308,12 +308,12 @@ async def calculate(data, PRICE, fixtureIds):
 
 					if(rake_over > 15):
 						rake_over = 15
-					if(rake_over <= 1.01)
+					if(rake_over <= 1.01):
 						rake_over = 1.01
 					
 					if(rake_under > 15):
 						rake_under = 15
-					if(rake_under <= 1.01)
+					if(rake_under <= 1.01):
 						rake_under = 1.01
 					
 
