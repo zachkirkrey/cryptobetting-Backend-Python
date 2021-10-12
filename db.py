@@ -2,7 +2,7 @@ from datetime import timedelta
 import time
 from typing import ClassVar
 import pandas as pd
-from models import Fixtures, engine, session, OperationalError, StatementError, wraps, Expiries, PnlData
+from models import Fixtures, engine, session, OperationalError, StatementError, wraps, Expiries, PnlData, Bids
 
 def mk_session(fun):
     def wrapper(*args, **kwargs):
@@ -64,6 +64,19 @@ def db_add_pnldata(fixtureId, price, strike, probability, over, under, timestamp
         session.add(insert_probability)
         session.commit()
         return insert_probability.idpnldata
+    except Exception as e:
+        print(e)
+        return 0
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_add_bids(fixtureId, price, strike, probability, over, under, timestamp, endTime, session=None):
+    try:
+        insert_bids = Bids(
+            fixtureId=fixtureId, price=price, strike=strike, probability=probability, over=over, under=under, bidAmount=100, timestamp=timestamp, endTime=endTime)
+        session.add(insert_bids)
+        session.commit()
+        return insert_bids.idbids
     except Exception as e:
         print(e)
         return 0
@@ -297,6 +310,38 @@ def db_update_fixture_pnl(idPnlData, price, overPnl, underPnl, session=None):
         update_pnl = {'endPrice': price, 'overPnl': overPnl, 'underPnl': underPnl}
         session.query(PnlData).filter(PnlData.idpnldata == idPnlData).update(
             update_pnl, synchronize_session=False)
+        session.commit()
+        return True
+    except Exception as e:
+        print(e)
+        return None
+
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_get_fixture_bid_data(fixtureId, session=None):
+    try:
+        # print(status)
+        check_fixture = session.query().with_entities(Bids.idbids, Bids.strike, Bids.over,
+                                                      Bids.under, Bids.bidAmount).filter(Bids.fixtureId == fixtureId).statement
+        df = pd.read_sql(check_fixture, engine)
+        # print(check_fixture.compile(engine))
+        if(df.empty):
+            return None
+        else:
+            return df.to_json(orient="records")
+    except Exception as e:
+        print(e)
+        return None
+
+
+@retry_db((OperationalError, StatementError), n_retries=3)
+@mk_session
+def db_update_fixture_bid(idbid, price, overPnl, underPnl, session=None):
+    try:
+        update_bid = {'endPrice': price, 'overPnl': overPnl, 'underPnl': underPnl}
+        session.query(Bids).filter(Bids.idbids == idbid).update(
+            update_bid, synchronize_session=False)
         session.commit()
         return True
     except Exception as e:

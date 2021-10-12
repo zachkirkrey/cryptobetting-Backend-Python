@@ -2,12 +2,22 @@ import asyncio
 import asyncio_redis
 import json
 import redis
+import os
 from datetime import datetime
-from db import db_add_pnldata
+from db import db_add_pnldata, db_add_bids
 
 USERPOOL = redis.ConnectionPool(
 	host='localhost', port=6379, db=0, decode_responses=True)
 rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
+
+
+def get_config_data():
+	dir_path = os.path.dirname(os.path.realpath(__file__))
+	path = dir_path + '/input.json'
+	#print(path)
+	f = open(path)
+	data = json.load(f)
+	return data
 
 async def main():
     try:
@@ -57,6 +67,12 @@ async def main():
                         endTime = datetime.utcfromtimestamp(fixtureExpiry).strftime('%Y-%m-%d %H:%M:%S')
 
                         db_add_pnldata(fixtureId, price, strike, prob, over, under, timestamp, endTime)
+                        
+                        input_data = get_config_data()
+                        bid_prob = input_data['bid_probability']
+
+                        if(over <= bid_prob or under <= bid_prob):
+                            db_add_bids(fixtureId, price, strike, prob, over, under, timestamp, endTime)
 
         # When finished, close the connection.
         connection.close()

@@ -6,7 +6,7 @@ import requests
 import redis
 import os
 import ast
-from db import db_get_ended_fixture, db_get_fixture, db_set_fixture_status, db_set_fixture_price, db_get_fixture_end_price, db_get_fixture_pnl_data, db_update_fixture_pnl
+from db import db_get_ended_fixture, db_get_fixture, db_set_fixture_status, db_set_fixture_price, db_get_fixture_end_price, db_get_fixture_pnl_data, db_update_fixture_pnl, db_get_fixture_bid_data, db_update_fixture_bid
 import uuid
 import hashlib
 import logging
@@ -119,6 +119,27 @@ if(fixtures != None):
                                     underPnl = round(float(bidAmount * under), 2)
 
                                 db_update_fixture_pnl(idPnlData, price, overPnl, underPnl)
+                        
+                        bidData = db_get_fixture_bid_data(fixture['id'])
+                        if(bidData != None):
+                            bidData = json.loads(bidData)
+                            for data in bidData:
+                                # print(data)
+                                idBid = data['idbids']
+                                bidAmount = data['bidAmount']
+                                strike = data['strike']
+                                over = data['over']
+                                under = data['under']
+
+                                if(price >= strike):
+                                    overPnl = round(float(bidAmount * over),2)
+                                    underPnl = round(float(bidAmount - (bidAmount * under)),2)
+                                else:
+                                    overPnl = round(float(bidAmount - (bidAmount * over)), 2)
+                                    underPnl = round(float(bidAmount * under), 2)
+
+                                db_update_fixture_bid(idBid, price, overPnl, underPnl)
+
                         
 
                     SECRET_KEY = os.getenv('OWAPI_SECRET_KEY')
