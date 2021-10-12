@@ -306,6 +306,18 @@ async def calculate(data, PRICE, fixtureIds):
 					rake_over = rake_over_val * (1 / over_prob)
 					rake_under = rake_under_val * (1 / under_prob)
 
+					if(rake_over > 15):
+    					rake_over = 15
+					if(rake_over <= 1.01)
+						rake_over = 1.01
+					
+					if(rake_under > 15):
+    					rake_under = 15
+					if(rake_under <= 1.01)
+						rake_under = 1.01
+					
+
+
 					# probability['odds_id'] = odds_id
 					probability['strike'] = prob['strike']
 					probability['over'] = float('{:.3g}'.format(rake_over))
