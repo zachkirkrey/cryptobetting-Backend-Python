@@ -39,6 +39,7 @@ async def main():
             # print(type(data))
             if 'fixtures' in data:
                 fixtures = data['fixtures']
+                rclient.setex('check_fixtures', 60, str(fixtures))
                 # print(fixtures)
                 timestamp = data['timestamp']
                 price = data['price']
