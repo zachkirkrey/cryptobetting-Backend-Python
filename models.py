@@ -60,6 +60,23 @@ class PnlData(Base):
     timestamp = Column(TIMESTAMP)
     endTime = Column(TIMESTAMP)
 
+class Bids(Base):
+    __tablename__ = 'bids'
+
+    idbids = Column(Integer, primary_key=True)
+    fixtureId = Column(ForeignKey('fixtures.id', ondelete='RESTRICT', onupdate='RESTRICT'), index=True)
+    price = Column(Float)
+    strike = Column(Float)
+    probability = Column(Float)
+    over = Column(Float)
+    under = Column(Float)
+    endPrice = Column(Float)
+    bidAmount = Column(Float)
+    overPnl = Column(Float)
+    underPnl = Column(Float)
+    timestamp = Column(TIMESTAMP)
+    endTime = Column(TIMESTAMP)
+
 class Fixtures(Base):
     __tablename__ = 'fixtures'
 
