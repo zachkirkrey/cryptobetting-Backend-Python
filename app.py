@@ -9,8 +9,7 @@ import random
 import string
 from flask import send_file, Flask, jsonify
 from flask_restful import Api, Resource, reqparse, request
-from db import (db_add_expiries, db_add_probabilities,
-                db_get_expiry_data, db_get_fixtures_by_status, db_get_fixtures, db_get_fixtures_by_id)
+from db import *
 from flask_cors import CORS
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
