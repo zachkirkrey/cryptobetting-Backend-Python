@@ -63,6 +63,14 @@ def get_config_data():
 	data = json.load(f)
 	return data
 
+def get_math_model_data(URL, finalJson):
+	try:
+		print('------- Calling Math Model --------')
+		print(URL)
+		response = requests.post(URL, data=finalJson)
+		return response
+	except Exception as e:
+		return None
 
 async def calculate(data, PRICE, fixtureIds):
 	SLOTS = 2
@@ -268,78 +276,89 @@ async def calculate(data, PRICE, fixtureIds):
 			logging.info(json.dumps(finalJson))
 			
 			# with open('output.json', "w+") as f:
-			#     f.write(finalJson)    
-			URL = os.getenv('MATH_MODEL_URL')
-			response = requests.post(URL, data=finalJson)
+			#     f.write(finalJson)  
+			response = None
+			try:
+				URL = os.getenv('MATH_MODEL_URL')
+				response = get_math_model_data(URL, finalJson)
+				print(response)
+				if(response == None and response.status_code != 200):
+					URL = os.getenv('MATH_MODEL_URL_NEW')
+					response = get_math_model_data(URL, finalJson)
+			except Exception as e:
+				print(e)
+				continue
+			
 			# print(response)
 			# print(response.json())
 			# print("FIXTURE ID: ", fixtureId)
 			# print("Fixture Expiry: ",fixtureExpiry)
-			
-			logging.info(json.dumps(response.json()))
-			logging.info('________________________________________')
-			if "error" in response.json():
-				continue
-			for j in response.json()['expiries']:
-				odds_id = 1
-				expiry = {}
-				expiry['id'] = fixtureId
-				# expiry['expiry'] = j['expiry']
-				probabilities = []
-				# idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
-				# print(idexpiries)
-				# print(j)
-				for prob in j['probabilities']:
-					probability = {}
-					# print(prob)
-					over_prob = prob['probability']
-					under_prob = (1 - over_prob)
-					rake_over_val = 0
-					rake_under_val = 0
-					if(over_prob>0.5):
-						rake_over_val = 0.95
-						rake_under_val = 0.99
-					if(over_prob <= 0.5):
-						rake_over_val = 0.99
-						rake_under_val = 0.95
+			if(response != None and response.status_code == 200):
+				logging.info(json.dumps(response.json()))
+				logging.info('________________________________________')
+				if "error" in response.json():
+					continue
+				
+				for j in response.json()['expiries']:
+					odds_id = 1
+					expiry = {}
+					expiry['id'] = fixtureId
+					# expiry['expiry'] = j['expiry']
+					probabilities = []
+					# idexpiries = db_add_expiries(j['expiry'], PRICE, data['Rake_over'], data['Rake_under'])
+					# print(idexpiries)
+					# print(j)
+					for prob in j['probabilities']:
+						probability = {}
+						# print(prob)
+						over_prob = prob['probability']
+						under_prob = (1 - over_prob)
+						rake_over_val = 0
+						rake_under_val = 0
+						if(over_prob>0.5):
+							rake_over_val = 0.95
+							rake_under_val = 0.99
+						if(over_prob <= 0.5):
+							rake_over_val = 0.99
+							rake_under_val = 0.95
 
-					rake_over = rake_over_val * (1 / over_prob)
-					rake_under = rake_under_val * (1 / under_prob)
+						rake_over = rake_over_val * (1 / over_prob)
+						rake_under = rake_under_val * (1 / under_prob)
 
-					if(rake_over > 15):
-						rake_over = 15
-					if(rake_over <= 1.01):
-						rake_over = 1.01
-					
-					if(rake_under > 15):
-						rake_under = 15
-					if(rake_under <= 1.01):
-						rake_under = 1.01
-					
+						if(rake_over > 15):
+							rake_over = 15
+						if(rake_over <= 1.01):
+							rake_over = 1.01
+						
+						if(rake_under > 15):
+							rake_under = 15
+						if(rake_under <= 1.01):
+							rake_under = 1.01
+						
 
 
-					# probability['odds_id'] = odds_id
-					probability['strike'] = prob['strike']
-					probability['over'] = float('{:.3g}'.format(rake_over))
-					probability['under'] = float('{:.3g}'.format(rake_under))
+						# probability['odds_id'] = odds_id
+						probability['strike'] = prob['strike']
+						probability['over'] = float('{:.3g}'.format(rake_over))
+						probability['under'] = float('{:.3g}'.format(rake_under))
 
-					rclient.set("fixtureProb_"+str(fixtureId)+"_"+str(prob['strike']), float('{:.3g}'.format(prob['probability'])))
+						rclient.set("fixtureProb_"+str(fixtureId)+"_"+str(prob['strike']), float('{:.3g}'.format(prob['probability'])))
 
-					# print('Timestamp :', int(curr_datetime.timestamp()))
-					# print('ExpiryTime :', fixtureExpiry)
-					# print('BTC price :', PRICE)
-					# print('Strike price :', prob['strike'])
-					# print('Over :', float('{:.3g}'.format(rake_over)))
-					# print('Under :', float('{:.3g}'.format(rake_under)))
-					
-					# db_add_probabilities(idexpiries, odds_id, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
+						# print('Timestamp :', int(curr_datetime.timestamp()))
+						# print('ExpiryTime :', fixtureExpiry)
+						# print('BTC price :', PRICE)
+						# print('Strike price :', prob['strike'])
+						# print('Over :', float('{:.3g}'.format(rake_over)))
+						# print('Under :', float('{:.3g}'.format(rake_under)))
+						
+						# db_add_probabilities(idexpiries, odds_id, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
 
-					probabilities.append(probability)
-					odds_id = odds_id + 1
+						probabilities.append(probability)
+						odds_id = odds_id + 1
 
-				expiry['probabilities'] = probabilities
+					expiry['probabilities'] = probabilities
 
-				expriries.append(expiry)
+					expriries.append(expiry)
 
 		if(len(expriries) > 0):
 			finalOutput['price'] = PRICE
