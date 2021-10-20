@@ -21,4 +21,10 @@ fixtures = rclient.get('check_fixtures')
 
 if(fixtures == None):
     # print('No Fixtues')
-    sendThreadedText(BOT_TOKEN, CHAT_ID , 'No fixtures data found')
+    ENV = os.getenv('ENV')
+    if(ENV == 'prod'):
+        MESSAGE = 'Error: Not receiving Fixture Data on Prod'
+    else:
+        MESSAGE = 'Error: Not receiving Fixture Data on Dev'
+
+    sendThreadedText(BOT_TOKEN, CHAT_ID, MESSAGE)
