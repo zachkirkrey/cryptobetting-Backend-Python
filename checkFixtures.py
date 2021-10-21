@@ -6,7 +6,7 @@ from datetime import datetime
 from db import db_add_pnldata, db_add_bids
 
 USERPOOL = redis.ConnectionPool(
-	host='localhost', port=6379, db=0, decode_responses=True)
+	host=os.getenv('BO_REDIS_HOST'), port=os.getenv('REDIS_PORT'), db=0, decode_responses=True)
 rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
 
 BOT_TOKEN = os.getenv('BO_TELEGRAM_BOT_TOKEN')
