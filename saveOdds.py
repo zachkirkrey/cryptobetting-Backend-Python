@@ -41,6 +41,7 @@ async def main():
                 fixtures = data['fixtures']
                 rclient.setex('check_fixtures', 60, str(fixtures))
                 # print(fixtures)
+                '''
                 timestamp = data['timestamp']
                 price = data['price']
                 for fixture in fixtures:
@@ -74,7 +75,7 @@ async def main():
 
                         if(over <= bid_prob or under <= bid_prob):
                             db_add_bids(fixtureId, price, strike, prob, over, under, timestamp, endTime)
-
+                '''
         # When finished, close the connection.
         connection.close()
     except Exception as e:
