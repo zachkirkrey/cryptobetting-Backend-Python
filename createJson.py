@@ -158,7 +158,7 @@ async def calculate(data, PRICE, fixtureIds):
 
 						for res in timezone_rounding:
 							print(res)
-							if(curr_minute < res):
+							if(curr_minute <= res):
 								hour = curr_hour
 								minute = res
 								min_diff = res - curr_minute
