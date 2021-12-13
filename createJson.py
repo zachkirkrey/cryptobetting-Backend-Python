@@ -313,8 +313,8 @@ async def calculate(data, PRICE, fixtureIds):
 						# print(prob)
 						over_prob = prob['probability']
 						under_prob = (1 - over_prob)
-						rake_over_val = 0.94
-						rake_under_val = 0.94
+						rake_over_val = 0.90
+						rake_under_val = 0.90
 #						if(over_prob>0.5):
 #							rake_over_val = 0.95
 #							rake_under_val = 0.99
