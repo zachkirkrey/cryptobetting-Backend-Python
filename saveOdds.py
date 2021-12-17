@@ -42,7 +42,8 @@ async def main():
                 rclient.setex('check_fixtures', 60, str(fixtures))
                 # print(fixtures)
                 
-                timestamp = data['timestamp']
+                timestamp = datetime.utcfromtimestamp(data['timestamp']).strftime('%Y-%m-%d %H:%M:%S')
+                
                 price = data['price']
                 for fixture in fixtures:
                     print(fixture)
