@@ -33,7 +33,7 @@ async def main():
         # Inside a while loop, wait for incoming events.
         while True:
             reply = await subscriber.next_published()
-            # print('Received: ', repr(reply.value), 'BO-DATA', reply.channel)
+            print('Received: ', repr(reply.value), 'BO-DATA', reply.channel)
             data = json.loads(reply.value)
             # print(data)
             # print(type(data))
@@ -41,41 +41,44 @@ async def main():
                 fixtures = data['fixtures']
                 rclient.setex('check_fixtures', 60, str(fixtures))
                 # print(fixtures)
-                '''
+                
                 timestamp = data['timestamp']
                 price = data['price']
                 for fixture in fixtures:
-                    # print(fixture)
+                    print(fixture)
                     fixtureId = fixture['id']
-                    # print("EXP: fixureExpiry_"+str(fixtureId))
+                    print("EXP: fixureExpiry_"+str(fixtureId))
                     fixtureExpiry = rclient.get("fixtureExpiry_"+str(fixtureId))
                     fixtureExpiry = int(int(fixtureExpiry)/ 1000)
                     for prob in fixture['probabilities']:
                         strike = prob['strike']
-                        over = prob['over']
-                        under = prob['under']
+                        #over = prob['over']
+                        #under = prob['under']
 
                         prob = rclient.get("fixtureProb_"+str(fixtureId)+"_"+str(strike))
 
-                        # print('Fixture Id :', fixtureId)
-                        # print('Timestamp :', timestamp)
-                        # print('ExpiryTime :', fixtureExpiry)
-                        # print('BTC price :', price)
-                        # print('Strike price :', strike)
-                        # print('Probability :', prob)
-                        # print('Over :', over)
-                        # print('Under :', under)
+                        over = round((1 / float(prob)),6)
+                        under = round((1 / (1 - float(prob))),6)
+
+                        print('Fixture Id :', fixtureId)
+                        print('Timestamp :', timestamp)
+                        print('ExpiryTime :', fixtureExpiry)
+                        print('BTC price :', price)
+                        print('Strike price :', strike)
+                        print('Probability :', prob)
+                        print('Over :', over)
+                        print('Under :', under)
 
                         endTime = datetime.utcfromtimestamp(fixtureExpiry).strftime('%Y-%m-%d %H:%M:%S')
 
-                        db_add_pnldata(fixtureId, price, strike, prob, over, under, timestamp, endTime)
+                        #db_add_pnldata(fixtureId, price, strike, prob, over, under, timestamp, endTime)
                         
-                        input_data = get_config_data()
-                        bid_prob = input_data['bid_probability']
+                        #input_data = get_config_data()
+                        #bid_prob = input_data['bid_probability']
 
-                        if(over <= bid_prob or under <= bid_prob):
-                            db_add_bids(fixtureId, price, strike, prob, over, under, timestamp, endTime)
-                '''
+                        #if(over <= bid_prob or under <= bid_prob):
+                        db_add_bids(fixtureId, price, strike, prob, over, under, timestamp, endTime)
+                
         # When finished, close the connection.
         connection.close()
     except Exception as e:
