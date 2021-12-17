@@ -112,11 +112,11 @@ if(fixtures != None):
                                 under = data['under']
 
                                 if(price >= strike):
-                                    overPnl = round(float(bidAmount * over),2)
-                                    underPnl = round(float(bidAmount - (bidAmount * under)),2)
-                                else:
                                     overPnl = round(float(bidAmount - (bidAmount * over)), 2)
-                                    underPnl = round(float(bidAmount * under), 2)
+                                    underPnl = -100
+                                else:
+                                    overPnl = -100
+                                    underPnl = round(float(bidAmount - (bidAmount * under)), 2)
 
                                 db_update_fixture_pnl(idPnlData, price, overPnl, underPnl)
                         
@@ -132,11 +132,11 @@ if(fixtures != None):
                                 under = data['under']
 
                                 if(price >= strike):
-                                    overPnl = round(float(bidAmount * over),2)
-                                    underPnl = round(float(bidAmount - (bidAmount * under)),2)
-                                else:
                                     overPnl = round(float(bidAmount - (bidAmount * over)), 2)
-                                    underPnl = round(float(bidAmount * under), 2)
+                                    underPnl = -100
+                                else:
+                                    overPnl = -100
+                                    underPnl = round(float(bidAmount - (bidAmount * under)), 2)
 
                                 db_update_fixture_bid(idBid, price, overPnl, underPnl)
 
