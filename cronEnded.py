@@ -96,49 +96,48 @@ if(fixtures != None):
                 print(res)
             
                 try:
-                    fixture_end_price = db_get_fixture_end_price(
-                        fixture['id'])
+                    fixture_end_price = db_get_fixture_end_price(fixture['id'])
                     if(fixture_end_price == None):
                         db_set_fixture_price(fixture['id'], price)
-                        pnlData = db_get_fixture_pnl_data(fixture['id'])
-                        if(pnlData != None):
-                            pnldata = json.loads(pnlData)
-                            for data in pnldata:
-                                # print(data)
-                                idPnlData = data['idpnldata']
-                                bidAmount = data['bidAmount']
-                                strike = data['strike']
-                                over = data['over']
-                                under = data['under']
+                        # pnlData = db_get_fixture_pnl_data(fixture['id'])
+                        # if(pnlData != None):
+                        #     pnldata = json.loads(pnlData)
+                        #     for data in pnldata:
+                        #         # print(data)
+                        #         idPnlData = data['idpnldata']
+                        #         bidAmount = data['bidAmount']
+                        #         strike = data['strike']
+                        #         over = data['over']
+                        #         under = data['under']
 
-                                if(price >= strike):
-                                    overPnl = round(float(bidAmount - (bidAmount * over)), 2)
-                                    underPnl = -100
-                                else:
-                                    overPnl = -100
-                                    underPnl = round(float(bidAmount - (bidAmount * under)), 2)
+                        #         if(price >= strike):
+                        #             overPnl = round(float(bidAmount - (bidAmount * over)), 2)
+                        #             underPnl = -100
+                        #         else:
+                        #             overPnl = -100
+                        #             underPnl = round(float(bidAmount - (bidAmount * under)), 2)
 
-                                db_update_fixture_pnl(idPnlData, price, overPnl, underPnl)
+                        #         db_update_fixture_pnl(idPnlData, price, overPnl, underPnl)
                         
-                        bidData = db_get_fixture_bid_data(fixture['id'])
-                        if(bidData != None):
-                            bidData = json.loads(bidData)
-                            for data in bidData:
-                                # print(data)
-                                idBid = data['idbids']
-                                bidAmount = data['bidAmount']
-                                strike = data['strike']
-                                over = data['over']
-                                under = data['under']
+                        # bidData = db_get_fixture_bid_data(fixture['id'])
+                        # if(bidData != None):
+                        #     bidData = json.loads(bidData)
+                        #     for data in bidData:
+                        #         # print(data)
+                        #         idBid = data['idbids']
+                        #         bidAmount = data['bidAmount']
+                        #         strike = data['strike']
+                        #         over = data['over']
+                        #         under = data['under']
 
-                                if(price >= strike):
-                                    overPnl = round(float(bidAmount - (bidAmount * over)), 2)
-                                    underPnl = -100
-                                else:
-                                    overPnl = -100
-                                    underPnl = round(float(bidAmount - (bidAmount * under)), 2)
+                        #         if(price >= strike):
+                        #             overPnl = round(float(bidAmount - (bidAmount * over)), 2)
+                        #             underPnl = -100
+                        #         else:
+                        #             overPnl = -100
+                        #             underPnl = round(float(bidAmount - (bidAmount * under)), 2)
 
-                                db_update_fixture_bid(idBid, price, overPnl, underPnl)
+                        #         db_update_fixture_bid(idBid, price, overPnl, underPnl)
 
                         
 
