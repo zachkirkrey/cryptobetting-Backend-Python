@@ -118,7 +118,6 @@ async def calculate(data, PRICE, fixtureIds):
 					else:
 						nearest_under = round_to * math.floor((PRICE/round_to))
 
-					nearest_under = round_to * math.floor((PRICE/round_to))
 					nearest_over = round_to * math.ceil((PRICE/round_to))
 					# print(nearest_under)
 					# print(nearest_over)
