@@ -18,7 +18,7 @@ logging.basicConfig(
 	)
   ],
   level=logging.INFO,
-  format='%(asctime)s %(levelname)s %(message)s'
+  format='%(message)s'
 )
 
 from unicorn_binance_websocket_api.unicorn_binance_websocket_api_manager import BinanceWebSocketApiManager
@@ -71,7 +71,7 @@ def get_math_model_data(URL, finalJson):
 		return response
 	except Exception as e:
 		print(e)
-		logging.info(json.dumps({"System":str(e)}))
+		logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message":str(e)}))
 		return None
 
 async def calculate(data, PRICE, fixtureIds):
@@ -264,7 +264,7 @@ async def calculate(data, PRICE, fixtureIds):
 									EXPIRIES.append(exp)
 
 				except Exception as e:
-					logging.info(json.dumps({"System": str(e)}))
+					logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message":str(e)}))
 					traceback.print_exc()
 					print(e)
 
@@ -278,7 +278,7 @@ async def calculate(data, PRICE, fixtureIds):
 			result['expiries'] = EXPIRIES
 
 			finalJson = json.dumps(result)
-			logging.info(json.dumps({"FIXTURE ID": str(fixtureId), "Fixture Expiry": str(fixtureExpiry) , "Input": json.loads(finalJson)}))
+			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "input", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry), "data": json.loads(finalJson)}))
 
 			# with open('output.json', "w+") as f:
 			#     f.write(finalJson)  
@@ -292,7 +292,7 @@ async def calculate(data, PRICE, fixtureIds):
 					response = get_math_model_data(URL, finalJson)
 			except Exception as e:
 				print(e)
-				logging.info(json.dumps({"System":str(e)}))
+				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message": str(e)}))
 				continue
 			
 			# print(response)
@@ -300,7 +300,7 @@ async def calculate(data, PRICE, fixtureIds):
 			# print("FIXTURE ID: ", fixtureId)
 			# print("Fixture Expiry: ",fixtureExpiry)
 			if(response != None and response.status_code == 200):
-				logging.info(json.dumps({"Output": json.loads(response.json())}))
+				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"output", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry),"data": json.loads(response.json())}))
 				# logging.info('________________________________________')
 				if "error" in response.json():
 					continue
@@ -374,7 +374,7 @@ async def calculate(data, PRICE, fixtureIds):
 			# finalOutput['rake_under'] = data['Rake_under']
 			finalOutput['fixtures'] = expriries
 			
-			logging.info(json.dumps({"finalOutput": finalOutput}))
+			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "finalOutput", "data": finalOutput}))
 			print(json.dumps(finalOutput))
 			print('\n\n')
 
@@ -386,15 +386,15 @@ async def calculate(data, PRICE, fixtureIds):
 
 	except Exception as e:
 		print(e)
-		logging.info(json.dumps({"System": str(e)}))
+		logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "system", "message": str(e)}))
 		traceback.print_exc()
 		return {}
 
-logging.info(json.dumps({"System": "Started..."}))
+logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message": "System Started..."}))
 async def main():
 	error = 0
 	input_data = get_config_data()
-	logging.info(json.dumps({"System": input_data}))
+	logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message": input_data}))
 	for k, v in input_data.items():
 		if(type(v) == list):
 			flag = 0
@@ -411,59 +411,63 @@ async def main():
 			error = 1
 
 	if(error == 0):
-		binance_websocket_api_manager = BinanceWebSocketApiManager(
-			exchange="binance.com")
-		binance_websocket_api_manager.create_stream(
-			['miniTicker'], ['btcusdt'])
-		while True:
-			try:
-				stream = binance_websocket_api_manager.pop_stream_data_from_stream_buffer()
-				if stream:
-					jsonstream = json.loads(stream)
-					data = jsonstream.get('data')
-					if data:
-						resdisdata = rclient.get('last_sent_price')
-						if (resdisdata):
-							last_sent_price = ast.literal_eval(resdisdata)
-						else:
-							last_sent_price = -1
-						# print(type(last_sent_price))
-						# print(last_sent_price)
+		try:
+			binance_websocket_api_manager = BinanceWebSocketApiManager(
+				exchange="binance.com")
+			binance_websocket_api_manager.create_stream(
+				['miniTicker'], ['btcusdt'])
+			while True:
+				try:
+					stream = binance_websocket_api_manager.pop_stream_data_from_stream_buffer()
+					if stream:
+						jsonstream = json.loads(stream)
+						data = jsonstream.get('data')
+						if data:
+							resdisdata = rclient.get('last_sent_price')
+							if (resdisdata):
+								last_sent_price = ast.literal_eval(resdisdata)
+							else:
+								last_sent_price = -1
+							# print(type(last_sent_price))
+							# print(last_sent_price)
 
-						mark_price = float(data['c'])
-						print("Last Price; ", last_sent_price)
-						print("Mark Price; ", mark_price)
-						rclient.setex('BTC_PRICE', 30, str(mark_price))
+							mark_price = float(data['c'])
+							print("Last Price; ", last_sent_price)
+							print("Mark Price; ", mark_price)
+							rclient.setex('BTC_PRICE', 30, str(mark_price))
 
-						print(0.99*last_sent_price)
-						print(1.01*last_sent_price)
+							print(0.99*last_sent_price)
+							print(1.01*last_sent_price)
 
-						if rclient.get("sent_flag") == None:
-							fixtureData = rclient.smembers('fixtureId')
-							if (fixtureData):
-								# fixtureId = ast.literal_eval(fixtureData)
-								# print("Fixture Id; ", fixtureId)
-								await calculate(input_data, mark_price, fixtureData)
-								rclient.set('last_sent_price', str(mark_price))
-								rclient.setex("sent_flag", 10, 1)
-						elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
-							fixtureData = rclient.smembers('fixtureId')
-							if (fixtureData and mark_price != last_sent_price):
-								# print(fixtureData)
-								# fixtureId = ast.literal_eval(fixtureData)
-								# print("Fixture Id; ", fixtureId)
-								await calculate(input_data, mark_price, fixtureData)
-								rclient.set('last_sent_price', str(mark_price))
-								rclient.setex("sent_flag", 10, 1)
-						else:
-							res = {}
-							res['price'] = mark_price
-							res['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] 
-							res['type'] = 1
-							rclient.publish('BO-DATA', json.dumps(res))
-			except Exception as e:
-				print(e)
-				logging.info(json.dumps({"System":str(e)}))
+							if rclient.get("sent_flag") == None:
+								fixtureData = rclient.smembers('fixtureId')
+								if (fixtureData):
+									# fixtureId = ast.literal_eval(fixtureData)
+									# print("Fixture Id; ", fixtureId)
+									await calculate(input_data, mark_price, fixtureData)
+									rclient.set('last_sent_price', str(mark_price))
+									rclient.setex("sent_flag", 10, 1)
+							elif (mark_price < ((1-float(input_data['Price_change']))*last_sent_price) or mark_price > ((1+float(input_data['Price_change']))*last_sent_price)):
+								fixtureData = rclient.smembers('fixtureId')
+								if (fixtureData and mark_price != last_sent_price):
+									# print(fixtureData)
+									# fixtureId = ast.literal_eval(fixtureData)
+									# print("Fixture Id; ", fixtureId)
+									await calculate(input_data, mark_price, fixtureData)
+									rclient.set('last_sent_price', str(mark_price))
+									rclient.setex("sent_flag", 10, 1)
+							else:
+								res = {}
+								res['price'] = mark_price
+								res['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] 
+								res['type'] = 1
+								rclient.publish('BO-DATA', json.dumps(res))
+				except Exception as e:
+					print(e)
+					logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message":str(e)}))
+		except Exception as e:
+			print(e)
+			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message":str(e)}))
 if __name__ == "__main__":
 
 	loop = asyncio.get_event_loop()
