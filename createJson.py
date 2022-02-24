@@ -278,7 +278,7 @@ async def calculate(data, PRICE, fixtureIds):
 			result['expiries'] = EXPIRIES
 
 			finalJson = json.dumps(result)
-			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "input", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry), "data": json.loads(finalJson)}))
+			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "input", "asset_price": PRICE, "fixture.id": str(fixtureId), "fixture.expiry": str(fixtureExpiry), "data": EXPIRIES}))
 
 			# with open('output.json', "w+") as f:
 			#     f.write(finalJson)
@@ -300,7 +300,7 @@ async def calculate(data, PRICE, fixtureIds):
 			# print("FIXTURE ID: ", fixtureId)
 			# print("Fixture Expiry: ",fixtureExpiry)
 			if(response != None and response.status_code == 200):
-				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "output", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry),"data": response.json()}))
+				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "output", "asset_price": PRICE, "fixture.id": str(fixtureId), "fixture.expiry": str(fixtureExpiry), "data": response.json()}))
 				# logging.info('________________________________________')
 				if "error" in response.json():
 					logging.info(json.dumps({"time": str(datetime.now()), "level": "ERROR", "type": "system", "message": "Error in math model response: " + str(response)}))
@@ -375,7 +375,7 @@ async def calculate(data, PRICE, fixtureIds):
 			# finalOutput['rake_under'] = data['Rake_under']
 			finalOutput['fixtures'] = expriries
 
-			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "finalOutput", "data": finalOutput}))
+			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "finalOutput", "asset_price": PRICE, "fixture.id": str(fixtureId), "fixture.expiry": str(fixtureExpiry), "data": finalOutput}))
 			print(json.dumps(finalOutput))
 			print('\n\n')
 
@@ -443,7 +443,7 @@ async def main():
 								fixtureData = rclient.smembers('fixtureId')
 								if (fixtureData):
 									# fixtureId = ast.literal_eval(fixtureData)
-									# print("Fixture Id; ", fixtureId)
+									# print("fixture.Id; ", fixtureId)
 									await calculate(input_data, mark_price, fixtureData)
 									rclient.set('last_sent_price', str(mark_price))
 									rclient.setex("sent_flag", 10, 1)
@@ -452,7 +452,7 @@ async def main():
 								if (fixtureData and mark_price != last_sent_price):
 									# print(fixtureData)
 									# fixtureId = ast.literal_eval(fixtureData)
-									# print("Fixture Id; ", fixtureId)
+									# print("fixture.Id; ", fixtureId)
 									await calculate(input_data, mark_price, fixtureData)
 									rclient.set('last_sent_price', str(mark_price))
 									rclient.setex("sent_flag", 10, 1)
