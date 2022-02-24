@@ -300,7 +300,7 @@ async def calculate(data, PRICE, fixtureIds):
 			# print("FIXTURE ID: ", fixtureId)
 			# print("Fixture Expiry: ",fixtureExpiry)
 			if(response != None and response.status_code == 200):
-				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"output", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry),"data": json.loads(response.json())}))
+				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"output", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry),"data": response.json()}))
 				# logging.info('________________________________________')
 				if "error" in response.json():
 					continue
