@@ -71,20 +71,20 @@ def get_math_model_data(URL, finalJson):
 		return response
 	except Exception as e:
 		print(e)
-		logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message":str(e)}))
+		logging.info(json.dumps({"time": str(datetime.now()), "level": "ERROR", "type": "system", "message": "Error calling math model in " + URL + ": " + str(e)}))
 		return None
 
 async def calculate(data, PRICE, fixtureIds):
 	SLOTS = 2
-	
+
 	last_timeline = None
-	
+
 	print('INPUT DATA: ', data)
 	print('\n\n')
 
 	print('PRICE: ', PRICE)
 	print('\n')
-	
+
 	try:
 		finalOutput = {}
 
@@ -94,7 +94,7 @@ async def calculate(data, PRICE, fixtureIds):
 			print("EXP: fixureExpiry_"+str(fixtureId))
 			fixtureExpiry = rclient.get("fixtureExpiry_"+str(fixtureId))
 			fixtureExpiry = int(int(fixtureExpiry)/1000)
-			
+
 			for i in range(1, SLOTS+1):
 				try:
 					exp = {}
@@ -264,12 +264,12 @@ async def calculate(data, PRICE, fixtureIds):
 									EXPIRIES.append(exp)
 
 				except Exception as e:
-					logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message":str(e)}))
+					logging.info(json.dumps({"time": str(datetime.now()), "level": "ERROR", "type": "system", "message": "Error on slots: "+str(e)}))
 					traceback.print_exc()
 					print(e)
 
-			
-			
+
+
 			# print(fixtureId)
 			result = {}
 			result['asset_price'] = PRICE
@@ -281,7 +281,7 @@ async def calculate(data, PRICE, fixtureIds):
 			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "input", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry), "data": json.loads(finalJson)}))
 
 			# with open('output.json', "w+") as f:
-			#     f.write(finalJson)  
+			#     f.write(finalJson)
 			response = None
 			try:
 				URL = os.getenv('MATH_MODEL_URL')
@@ -292,19 +292,20 @@ async def calculate(data, PRICE, fixtureIds):
 					response = get_math_model_data(URL, finalJson)
 			except Exception as e:
 				print(e)
-				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message": str(e)}))
+				logging.info(json.dumps({"time": str(datetime.now()), "level": "ERROR", "type": "system", "message": "Error calling math model in " + URL + ": "+str(e)}))
 				continue
-			
+
 			# print(response)
 			# print(response.json())
 			# print("FIXTURE ID: ", fixtureId)
 			# print("Fixture Expiry: ",fixtureExpiry)
 			if(response != None and response.status_code == 200):
-				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"output", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry),"data": response.json()}))
+				logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "output", "fixture id": str(fixtureId), "fixture expiry": str(fixtureExpiry),"data": response.json()}))
 				# logging.info('________________________________________')
 				if "error" in response.json():
+					logging.info(json.dumps({"time": str(datetime.now()), "level": "ERROR", "type": "system", "message": "Error in math model response: " + str(response)}))
 					continue
-				
+
 				for j in response.json()['expiries']:
 					odds_id = 1
 					expiry = {}
@@ -335,12 +336,12 @@ async def calculate(data, PRICE, fixtureIds):
 							rake_over = 15
 						if(rake_over <= 1.01):
 							rake_over = 1.01
-						
+
 						if(rake_under > 15):
 							rake_under = 15
 						if(rake_under <= 1.01):
 							rake_under = 1.01
-						
+
 
 
 						# probability['odds_id'] = odds_id
@@ -356,7 +357,7 @@ async def calculate(data, PRICE, fixtureIds):
 						# print('Strike price :', prob['strike'])
 						# print('Over :', float('{:.3g}'.format(rake_over)))
 						# print('Under :', float('{:.3g}'.format(rake_under)))
-						
+
 						# db_add_probabilities(idexpiries, odds_id, prob['strike'], float('{:.3g}'.format(over_prob)), float('{:.3g}'.format(under_prob)))
 
 						probabilities.append(probability)
@@ -373,7 +374,7 @@ async def calculate(data, PRICE, fixtureIds):
 			# finalOutput['rake_over'] = data['Rake_over']
 			# finalOutput['rake_under'] = data['Rake_under']
 			finalOutput['fixtures'] = expriries
-			
+
 			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "finalOutput", "data": finalOutput}))
 			print(json.dumps(finalOutput))
 			print('\n\n')
@@ -386,15 +387,14 @@ async def calculate(data, PRICE, fixtureIds):
 
 	except Exception as e:
 		print(e)
-		logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "system", "message": str(e)}))
+		logging.info(json.dumps({"time": str(datetime.now()), "level": "ERROR", "type": "system", "message": "Error in calculate function: " + str(e)}))
 		traceback.print_exc()
 		return {}
 
-logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message": "System Started..."}))
 async def main():
 	error = 0
 	input_data = get_config_data()
-	logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message": input_data}))
+	logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "system", "message": input_data}))
 	for k, v in input_data.items():
 		if(type(v) == list):
 			flag = 0
@@ -403,11 +403,11 @@ async def main():
 					flag = 1
 
 			if(flag == 1):
-				print('Invaid '+k)
+				print('Invalid '+k)
 				error = 1
 
 		if(type(v) == int and v < 0):
-			print('Invaid '+k)
+			print('Invalid '+k)
 			error = 1
 
 	if(error == 0):
@@ -459,16 +459,18 @@ async def main():
 							else:
 								res = {}
 								res['price'] = mark_price
-								res['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3] 
+								res['timestamp'] = (datetime.now() + timedelta(hours=8)).strftime('%Y/%m/%d %H:%M:%S.%f')[:-3]
 								res['type'] = 1
 								rclient.publish('BO-DATA', json.dumps(res))
 				except Exception as e:
 					print(e)
-					logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message":str(e)}))
+					logging.info(json.dumps({"time": str(datetime.now()), "level": "ERROR", "type": "system", "message": "Error in binance connection: " + str(e)}))
 		except Exception as e:
 			print(e)
-			logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type":"system", "message":str(e)}))
+			logging.info(json.dumps({"time": str(datetime.now()), "level": "ERROR", "type": "system", "message": "Error in main function: " + str(e)}))
 if __name__ == "__main__":
+	logging.info(
+		json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "system", "message": "System Started..."}))
 
 	loop = asyncio.get_event_loop()
 	loop.run_until_complete(main())
