@@ -394,7 +394,7 @@ async def calculate(data, PRICE, fixtureIds):
 async def main():
 	error = 0
 	input_data = get_config_data()
-	logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "system", "message": input_data}))
+	logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "config", "message": input_data}))
 	for k, v in input_data.items():
 		if(type(v) == list):
 			flag = 0
