@@ -115,7 +115,7 @@ async def calculate(data, PRICE, fixtureIds):
 						round_to = rounding_min
 					else:
 						round_to = 1000
-					if(rounding_left == [] and PRICE % 50 == 0):
+					if(rounding_left == [] and PRICE % rounding_min == 0):
 						nearest_under = round_to * math.floor(((PRICE-1)/round_to))
 					else:
 						nearest_under = round_to * math.floor((PRICE/round_to))
