@@ -10,20 +10,22 @@ import uuid
 import hashlib
 import pytz
 import logging
-from logging.handlers import TimedRotatingFileHandler
+from logging.handlers import RotatingFileHandler
+logging.basicConfig(
+  handlers=[
+	RotatingFileHandler(
+	  'owapi1.log',
+	  maxBytes=10240000,
+	  backupCount=1
+	)
+  ],
+  level=logging.INFO,
+  format='%(message)s'
+)
 
 USERPOOL = redis.ConnectionPool(
     host='localhost', port=6379, db=0, decode_responses=True)
 rclient = redis.StrictRedis(connection_pool=USERPOOL, decode_responses=True)
-
-logger = logging.getLogger("Rotating Log")
-logger.setLevel(logging.INFO)
-
-handler = TimedRotatingFileHandler('./owapi1.log',
-                                   when="d",
-                                   interval=7,
-                                   backupCount=3)
-logger.addHandler(handler)
 
 CURR_TIME = datetime.now()
 
@@ -91,15 +93,13 @@ if(start_end_diff and start_market_diff):
                 print(URL)
                 response = requests.post(URL, json=res, headers=headers)
                 print(response)
-                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture - "+str(
-                    fixtureId)+" - Request - "+str(res)+" - Response - "+str(response)+" - " + str(response.text))
+                logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "system", "fixture id": str(fixtureId), "request": str(res), "response": str(response)+" - "+ str(response.text)}))
                 print(type(response))
                 if(response.status_code == 200 and 'ErrorCode' not in response):
                     db_set_fixture_status(fixtureId, "CREATED")
                     # rclient.set("fixtureCreated", str(fixtureId))
             except Exception as e:
-                logger.info(str(CURR_TIME.strftime("%m/%d/%Y, %H:%M:%S"))+" - CreateFixture - " +
-                            str(fixtureId)+" - Request - "+str(res)+" - Response - "+str(e))
+                logging.info(json.dumps({"time": str(datetime.now()), "level": "INFO", "type": "system", "fixture id": str(fixtureId), "request": str(res), "response": str(e)}))
 
 
         STARTTIME = STARTTIME + timedelta(minutes=start_diff)
