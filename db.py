@@ -100,13 +100,16 @@ def db_add_bids(fixtureId, price, strike, probability, over, under, timestamp, e
 @mk_session
 def db_add_fixture(fixture_type, start_time, market_end_time, end_time, session=None):
     try:
-        check_fixture = session.query(Fixtures).filter(Fixtures.fixtureType == fixture_type, Fixtures.startTime == start_time, Fixtures.marketEndTime == market_end_time, Fixtures.endTime == end_time).statement
+        check_fixture = session.query(Fixtures).filter( Fixtures.endTime >= end_time).statement
         df = pd.read_sql(check_fixture, engine)
         if(df.empty):
-            insert_fixture = Fixtures(fixtureType=fixture_type, startTime=start_time, marketEndTime=market_end_time, endTime=end_time)
-            session.add(insert_fixture)
-            session.commit()
-            return insert_fixture.id
+            check_fixture = session.query(Fixtures).filter(Fixtures.fixtureType == fixture_type, Fixtures.startTime == start_time, Fixtures.marketEndTime == market_end_time, Fixtures.endTime == end_time).statement
+            df = pd.read_sql(check_fixture, engine)
+            if(df.empty):
+                insert_fixture = Fixtures(fixtureType=fixture_type, startTime=start_time, marketEndTime=market_end_time, endTime=end_time)
+                session.add(insert_fixture)
+                session.commit()
+                return insert_fixture.id
 
         return 0
         
